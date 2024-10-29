@@ -10,9 +10,16 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
-      with:
-        submodules: 'recursive'
-    - name: make
-      run: make
-      working-directory: \Users\miche\OneDrive\Desktop\WebServ\pp\WebSer_new
+      - uses: actions/checkout@v4
+        with:
+          submodules: 'recursive'
+      
+      # Install necessary dependencies
+      - name: Install dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq gcc g++ make
+
+      # Run make command
+      - name: Build Project
+        run: make
