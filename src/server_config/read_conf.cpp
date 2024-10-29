@@ -1,4 +1,4 @@
-#include "../header/read_conf.hpp"
+#include "../../header/read_conf.hpp"
 
 Read_conf::Read_conf() : path("/default/path"), port(8080), size(0) {}
 

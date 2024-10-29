@@ -1,5 +1,5 @@
-#include "../header/server.hpp"
-#include "../header/read_conf.hpp"
+#include "../../header/server.hpp"
+#include "../../header/read_conf.hpp"
 
 Server::Server(int port) {
     server_fd = socket(AF_INET, SOCK_STREAM, 0);

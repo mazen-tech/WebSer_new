@@ -2,7 +2,13 @@ CC = c++
 CFLAGS = -Wall -Wextra -Werror
 # SRCS = src/main.cpp
 # SRCS = src/main_jp_test.cpp
-SRCS = src/main_content_length.cpp src/method_get.cpp src/method_post.cpp src/read_conf.cpp src/server.cpp src/find_file.cpp
+SRCS = src/main_content_length.cpp \
+		src/methods/method_get.cpp \
+		src/methods/method_post.cpp \
+		src/methods/method_delete.cpp \
+		src/server_config/read_conf.cpp \
+		src/server_config/server.cpp \
+		src/server_config/find_file.cpp
 
 OBJDIR = obj
 OBJS = $(SRCS:src/%.cpp=$(OBJDIR)/%.o)
@@ -15,7 +21,7 @@ $(EXEC): $(OBJS)
 	$(CC) $(CFLAGS) -o $@ $^
 
 $(OBJDIR)/%.o: src/%.cpp
-	@mkdir -p $(OBJDIR)
+	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:

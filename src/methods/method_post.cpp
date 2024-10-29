@@ -1,4 +1,4 @@
-#include "../header/read_conf.hpp"
+#include "../../header/read_conf.hpp"
 
 std::string f_name ( std::string request )
 {
@@ -108,7 +108,7 @@ int met_post(char *buffer, int new_socket)
         //     "\n"
         //     "<h1>Wynik skryptu CGI</h1>";
         // send(new_socket, http_response, strlen(http_response), 0);
-        std::cout << "Odpowiedź CGI została wysłana do klienta\n";
+        //std::cout << "Odpowiedź CGI została wysłana do klienta\n";
     }
 
     delete[] post_data;

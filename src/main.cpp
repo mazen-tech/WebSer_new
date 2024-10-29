@@ -1,4 +1,4 @@
-#include "../header/read_conf.hpp"
+/*#include "../header/read_conf.hpp"
 
 int main() {
     Read_conf config("config.conf");
@@ -78,4 +78,4 @@ int main() {
     close(server_fd);
 
     return 0;
-}
+}*/
