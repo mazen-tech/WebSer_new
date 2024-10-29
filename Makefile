@@ -1,5 +1,5 @@
 CC = c++
-CFLAGS = -Wall -Wextra -Werror
+CFLAGS =
 # SRCS = src/main.cpp
 # SRCS = src/main_jp_test.cpp
 SRCS = src/main_content_length.cpp src/method_get.cpp src/method_post.cpp src/read_conf.cpp src/server.cpp src/find_file.cpp
@@ -10,6 +10,7 @@ OBJS = $(SRCS:src/%.cpp=$(OBJDIR)/%.o)
 EXEC = WebServer
 
 all: $(EXEC)
+	./WebServer
 
 $(EXEC): $(OBJS)
 	$(CC) $(CFLAGS) -o $@ $^

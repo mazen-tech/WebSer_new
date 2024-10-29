@@ -40,8 +40,9 @@ int met_get(char *buffer, int new_socket)
         const char *python_path = "/usr/bin/python3";
         const char *script_path = "./src/cgi/mycgi.py";
         const char *page = file_name.c_str();
+        const char *method = "GET";
         // PASS REQUESTED PAGE (eg. index.html) AS ARG
-        const char *args[] = {python_path, script_path, page, NULL};
+        const char *args[] = {python_path, script_path, page, method, NULL};
         std::string qs = "QUERY_STRING=" + (std::string)query_string;
         // std::cout << qs << std::endl;
         char *envp[] = {
