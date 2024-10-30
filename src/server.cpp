@@ -55,20 +55,14 @@ void Server::listenForConnections() {
 }
 
 void Server::handleConnection(int new_socket) {
-    char buffer[2048] = {0};
-    ssize_t bytes_read;
     std::string request;
-    while(true)
+
+    request = save_request(new_socket);
+    if (request.find("POST /") != std::string::npos)
     {
-        bytes_read = read(new_socket, buffer, sizeof(buffer) - 1);
-        buffer[bytes_read] = '\0';
-        request += buffer;
-        if (bytes_read <= 0)
-            break;
-    }
-    std::cout << "reading request finished\n";
-    if (request.find("POST /") != std::string::npos) {
-        if (met_post((char *)request.c_str(), new_socket)) {
+        
+        if (met_post((char *)request.c_str(), new_socket))
+        {
             std::cerr << "POST request handling failed\n";
             return;
         }
@@ -76,9 +70,11 @@ void Server::handleConnection(int new_socket) {
         {
             std::cout << RED << "Response sent to client " << RESET << "[POST]" << std::endl;
         }
-    } else if (request.find("GET /") != std::string::npos) {
-        std::cout << "handling get\n";
-        if (met_get((char *)request.c_str(), new_socket)) {
+    }
+    else if (request.find("GET /") != std::string::npos)
+    {
+        if (met_get((char *)request.c_str(), new_socket))
+        {
             std::cerr << "GET request handling failed\n";
             return;
         }
@@ -87,7 +83,9 @@ void Server::handleConnection(int new_socket) {
             std::cout << YELLOW << "Response sent to client " << RESET << "[GET]" << std::endl;
         }
 
-    } else {
+    }
+    else
+    {
         const char *http_response =
             "HTTP/1.1 200 OK\r\n"
             "Content-Type: text/html\r\n"

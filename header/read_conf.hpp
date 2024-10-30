@@ -19,7 +19,11 @@
 #include <sys/wait.h>
 #include <netinet/in.h>
 #include <dirent.h>
+#include <poll.h>
+#include <cstring>
 
+
+std::string save_request(int new_socket);
 int met_get(char *buffer, int new_socket);
 int met_post(char *buffer, int new_socket);
 bool find_file(const std::string& dir, const std::string& target, std::string& found_path);
