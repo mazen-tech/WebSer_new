@@ -14,7 +14,10 @@ public:
 
 private:
     int server_fd;
+    int epoll_fd;
     struct sockaddr_in address;
+    struct epoll_event ev;
+    struct epoll_event events[MAX_EVENTS];
     int addrlen;
     void configureSocket();
     void listenForConnections();

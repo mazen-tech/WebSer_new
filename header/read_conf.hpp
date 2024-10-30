@@ -8,6 +8,7 @@
 #define BLUE "\033[34m"
 #define YELLOW "\033[33m"
 
+#define MAX_EVENTS 10
 
 #include <iostream>
 #include <unistd.h>
@@ -21,7 +22,7 @@
 #include <dirent.h>
 #include <poll.h>
 #include <cstring>
-
+#include <sys/epoll.h>
 
 std::string save_request(int new_socket);
 int met_get(char *buffer, int new_socket);

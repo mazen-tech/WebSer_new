@@ -22,6 +22,7 @@ Server::Server(int port) {
 
 Server::~Server() {
     close(server_fd);
+    close(epoll_fd);
 }
 
 void Server::configureSocket() {
@@ -39,10 +40,19 @@ void Server::listenForConnections() {
         exit(EXIT_FAILURE);
     }
 
+    epoll_fd = epoll_create(EPOLL_CLOEXEC); // flaga zamykajaca automatycznie deskryptor
+    ev.events = EPOLLIN | EPOLLOUT; // okresla jakie typy eventow ma monitorowac
+    // w naszym przypadku odczyt i zapis
+    ev.data.fd = server_fd;
+    epoll_ctl(epoll_fd, EPOLL_CTL_ADD, server_fd, &ev);// pozwala zarzadzac zdarzeniami w kolejce
+    // EPOLL_CTL_ADD dodaje desktyptor pliku do epolla
+
     std::cout << GREEN << "Server is running...\n" << RESET;
     std::cout << GREEN << "Server is listening on port.... " << RESET << std::endl; 
 
     while (true) {
+        int nfds = epoll_wait(epoll_fd, events, MAX_EVENTS, -1);// bedzie czekac na zdarzenia oraz je monitor
+        
         int addrlen = sizeof(address);
         int new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t*)&addrlen);
         if (new_socket < 0) {
