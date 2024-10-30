@@ -22,6 +22,7 @@ Server::Server(int port) {
 
 Server::~Server() {
     close(server_fd);
+    close(epoll_fd);
 }
 
 void Server::configureSocket() {
@@ -39,36 +40,51 @@ void Server::listenForConnections() {
         exit(EXIT_FAILURE);
     }
 
+    epoll_fd = epoll_create1(EPOLL_CLOEXEC); // flaga zamykajaca automatycznie deskryptor
+    ev.events = EPOLLIN | EPOLLOUT; // okresla jakie typy eventow ma monitorowac
+    // w naszym przypadku odczyt i zapis
+    ev.data.fd = server_fd;
+    epoll_ctl(epoll_fd, EPOLL_CTL_ADD, server_fd, &ev);// pozwala zarzadzac zdarzeniami w kolejce
+    // EPOLL_CTL_ADD dodaje desktyptor pliku do epolla
+
     std::cout << GREEN << "Server is running...\n" << RESET;
     std::cout << GREEN << "Server is listening on port.... " << RESET << std::endl; 
 
     while (true) {
-        int addrlen = sizeof(address);
-        int new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t*)&addrlen);
-        if (new_socket < 0) {
-            std::cerr << "Connection error\n";
-            continue;
+        int nfds = epoll_wait(epoll_fd, events, MAX_EVENTS, -1);// bedzie czekac na zdarzenia oraz je monitor
+        for (int i = 0; i < nfds; i ++)
+        {
+            if (events[i].data.fd == server_fd) //oznacza to ze mamy nowe polaczenie przychodzace
+            {
+                int addrlen = sizeof(address);
+                int new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t*)&addrlen);
+                if (new_socket < 0) {
+                    std::cerr << "Connection error\n";
+                    continue;
+                }
+                ev.events = EPOLLIN | EPOLLOUT;
+                ev.data.fd = new_socket;
+                epoll_ctl(epoll_fd, EPOLL_CTL_ADD, new_socket, &ev);
+            }
+            else
+            {
+                handleConnection(events[i].data.fd);
+                close(events[i].data.fd);
+            }
         }
 
-        handleConnection(new_socket);
     }
 }
 
 void Server::handleConnection(int new_socket) {
-    char buffer[2048] = {0};
-    ssize_t bytes_read;
     std::string request;
-    while(true)
+
+    request = save_request(new_socket);
+    if (request.find("POST /") != std::string::npos)
     {
-        bytes_read = read(new_socket, buffer, sizeof(buffer) - 1);
-        buffer[bytes_read] = '\0';
-        request += buffer;
-        if (bytes_read <= 0)
-            break;
-    }
-    std::cout << "reading request finished\n";
-    if (request.find("POST /") != std::string::npos) {
-        if (met_post((char *)request.c_str(), new_socket)) {
+        
+        if (met_post((char *)request.c_str(), new_socket))
+        {
             std::cerr << "POST request handling failed\n";
             return;
         }
@@ -76,9 +92,11 @@ void Server::handleConnection(int new_socket) {
         {
             std::cout << RED << "Response sent to client " << RESET << "[POST]" << std::endl;
         }
-    } else if (request.find("GET /") != std::string::npos) {
-        std::cout << "handling get\n";
-        if (met_get((char *)request.c_str(), new_socket)) {
+    }
+    else if (request.find("GET /") != std::string::npos)
+    {
+        if (met_get((char *)request.c_str(), new_socket))
+        {
             std::cerr << "GET request handling failed\n";
             return;
         }
@@ -87,7 +105,9 @@ void Server::handleConnection(int new_socket) {
             std::cout << YELLOW << "Response sent to client " << RESET << "[GET]" << std::endl;
         }
 
-    } else {
+    }
+    else
+    {
         const char *http_response =
             "HTTP/1.1 200 OK\r\n"
             "Content-Type: text/html\r\n"

@@ -8,6 +8,7 @@
 #define BLUE "\033[34m"
 #define YELLOW "\033[33m"
 
+#define MAX_EVENTS 10
 
 #include <iostream>
 #include <unistd.h>
@@ -19,7 +20,11 @@
 #include <sys/wait.h>
 #include <netinet/in.h>
 #include <dirent.h>
+#include <poll.h>
+#include <cstring>
+#include <sys/epoll.h>
 
+std::string save_request(int new_socket);
 int met_get(char *buffer, int new_socket);
 int met_post(char *buffer, int new_socket);
 bool find_file(const std::string& dir, const std::string& target, std::string& found_path);
