@@ -1,5 +1,5 @@
 CC = c++
-CFLAGS =
+CFLAGS = -no-pie
 # SRCS = src/main.cpp
 # SRCS = src/main_jp_test.cpp
 SRCS = src/main_content_length.cpp src/method_get.cpp src/method_post.cpp src/read_conf.cpp src/server.cpp src/find_file.cpp

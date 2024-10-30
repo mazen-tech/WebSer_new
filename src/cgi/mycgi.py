@@ -2,7 +2,8 @@ import os
 import sys
 from datetime import datetime, timedelta
 
-data = sys.stdin.read()  # Odczyt całej zawartości ze stdin
+if (sys.argv[2] != "GET"):
+    data = sys.stdin.read()  # Odczyt całej zawartości ze stdin
 
 def parse_args(qs):
     if '?' not in qs:
@@ -21,9 +22,9 @@ def parse_post_args(data):
 
 qs = os.getenv("QUERY_STRING", "")
 parse_args(qs)
-parse_post_args(data)
+if (sys.argv[2] != "GET"):
+    parse_post_args(data)
 page = sys.argv[1].replace('.py', '.html')
-
 
 def find_party():
     host_bday = datetime.strptime(os.getenv("your_bday"), "%Y-%m-%d").date()

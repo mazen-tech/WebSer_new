@@ -55,11 +55,20 @@ void Server::listenForConnections() {
 }
 
 void Server::handleConnection(int new_socket) {
-    char buffer[1024] = {0};
-    read(new_socket, buffer, 1024);
-
-    if (strstr(buffer, "POST /") != nullptr) {
-        if (met_post(buffer, new_socket)) {
+    char buffer[2048] = {0};
+    ssize_t bytes_read;
+    std::string request;
+    while(true)
+    {
+        bytes_read = read(new_socket, buffer, sizeof(buffer) - 1);
+        buffer[bytes_read] = '\0';
+        request += buffer;
+        if (bytes_read <= 0)
+            break;
+    }
+    std::cout << "reading request finished\n";
+    if (request.find("POST /") != std::string::npos) {
+        if (met_post((char *)request.c_str(), new_socket)) {
             std::cerr << "POST request handling failed\n";
             return;
         }
@@ -67,8 +76,9 @@ void Server::handleConnection(int new_socket) {
         {
             std::cout << RED << "Response sent to client " << RESET << "[POST]" << std::endl;
         }
-    } else if (strstr(buffer, "GET /") != nullptr) {
-        if (met_get(buffer, new_socket)) {
+    } else if (request.find("GET /") != std::string::npos) {
+        std::cout << "handling get\n";
+        if (met_get((char *)request.c_str(), new_socket)) {
             std::cerr << "GET request handling failed\n";
             return;
         }
