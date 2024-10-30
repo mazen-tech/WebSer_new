@@ -40,7 +40,7 @@ void Server::listenForConnections() {
         exit(EXIT_FAILURE);
     }
 
-    epoll_fd = epoll_create(EPOLL_CLOEXEC); // flaga zamykajaca automatycznie deskryptor
+    epoll_fd = epoll_create1(EPOLL_CLOEXEC); // flaga zamykajaca automatycznie deskryptor
     ev.events = EPOLLIN | EPOLLOUT; // okresla jakie typy eventow ma monitorowac
     // w naszym przypadku odczyt i zapis
     ev.data.fd = server_fd;
@@ -52,15 +52,27 @@ void Server::listenForConnections() {
 
     while (true) {
         int nfds = epoll_wait(epoll_fd, events, MAX_EVENTS, -1);// bedzie czekac na zdarzenia oraz je monitor
-        
-        int addrlen = sizeof(address);
-        int new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t*)&addrlen);
-        if (new_socket < 0) {
-            std::cerr << "Connection error\n";
-            continue;
+        for (int i = 0; i < nfds; i ++)
+        {
+            if (events[i].data.fd == server_fd) //oznacza to ze mamy nowe polaczenie przychodzace
+            {
+                int addrlen = sizeof(address);
+                int new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t*)&addrlen);
+                if (new_socket < 0) {
+                    std::cerr << "Connection error\n";
+                    continue;
+                }
+                ev.events = EPOLLIN | EPOLLOUT;
+                ev.data.fd = new_socket;
+                epoll_ctl(epoll_fd, EPOLL_CTL_ADD, new_socket, &ev);
+            }
+            else
+            {
+                handleConnection(events[i].data.fd);
+                close(events[i].data.fd);
+            }
         }
 
-        handleConnection(new_socket);
     }
 }
 
