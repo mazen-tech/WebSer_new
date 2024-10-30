@@ -98,3 +98,15 @@ form button {
 form button:hover {
     background-color: #0056b3;  /* Ciemniejszy kolor przy najechaniu */
 }
+
+.info {
+    background-color: #b7dce9; /* Subtelny kolor tła */
+    border: 1px solid #ddd;    /* Delikatna ramka */
+    padding: 10px 20px;        /* Odpowiednie marginesy wewnętrzne */
+    border-radius: 5px;        /* Zaokrąglone rogi */
+    text-align: center;        /* Wyśrodkowanie tekstu */
+    color: #333;               /* Kolor tekstu */
+    font-size: 16px;           /* Rozmiar tekstu */
+    max-width: 400px;          /* Maksymalna szerokość dla estetyki */
+    margin: 10px auto;         /* Wyśrodkowanie całego div'a */
+}
