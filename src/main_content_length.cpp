@@ -4,7 +4,7 @@
 
 int main() {
     // Load the configuration from the config file
-    Read_conf config("/mnt/c/Users/miche/OneDrive/Desktop/cpp/webtest/WebServ/configurations/config.conf");
+    Read_conf config("/mnt/c/Users/miche/OneDrive/Desktop/WebSer_new/configurations");
     if (config.getPort() != 8080) { // error need fixed 
         std::cerr << "Configuration not loaded properly. Exiting...\n";
         return -1;

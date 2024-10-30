@@ -6,7 +6,7 @@ Read_conf::Read_conf() : path("/default/path"), port(8080), size(0) {}
 Read_conf::Read_conf(const std::string& configFile) : path("/default/path"), port(8080), size(0) {
     std::ifstream file(configFile);
     if (!file.is_open()) {
-        std::cerr << "Error: Could not open configuration file at " << configFile << std::endl;
+        std::cerr << "Error:Read_conf: Could not open configuration file at " << configFile << std::endl;
         return;
     }
 

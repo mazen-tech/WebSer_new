@@ -5,6 +5,7 @@
 #include <iostream>
 #include <netinet/in.h>
 #include "read_conf.hpp"
+#include "ErrorPage.hpp"
 
 class Server {
 public:
@@ -15,7 +16,9 @@ public:
 private:
     int server_fd;
     struct sockaddr_in address;
+    ErrorPage _errorPage;
     int addrlen;
+    
     void configureSocket();
     void listenForConnections();
     void handleConnection(int new_socket);

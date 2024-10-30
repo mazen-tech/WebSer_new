@@ -1,5 +1,5 @@
 #include "../../header/server.hpp"
-#include "../../header/read_conf.hpp"
+
 
 Server::Server(int port) {
     server_fd = socket(AF_INET, SOCK_STREAM, 0);
@@ -58,7 +58,7 @@ void Server::handleConnection(int new_socket) {
     char buffer[1024] = {0};
     read(new_socket, buffer, 1024);
 
-    if (strstr(buffer, "POST /") != nullptr) {
+    /*if (strstr(buffer, "POST /") != nullptr) {
         if (met_post(buffer, new_socket)) {
             std::cerr << "POST request handling failed\n";
             return;
@@ -77,6 +77,23 @@ void Server::handleConnection(int new_socket) {
             std::cout << YELLOW << "Response sent to client " << RESET << "[GET]" << std::endl;
         }
 
+    }*/
+    if (strstr(buffer, "POST /") != nullptr) {
+        if (met_post(buffer, new_socket)) {
+            std::string errorResponse = _errorPage.getErrPage(500); // Internal Server Error
+            send(new_socket, errorResponse.c_str(), errorResponse.size(), 0);
+            std::cerr << "Error: Failed to handle POST request\n";
+            close(new_socket);
+            return;
+        }
+    } else if (strstr(buffer, "GET /") != nullptr) {
+        if (met_get(buffer, new_socket)) {
+            std::string errorResponse = _errorPage.getErrPage(404); // Not Found
+            send(new_socket, errorResponse.c_str(), errorResponse.size(), 0);
+            std::cerr << "Error: Failed to handle GET request\n";
+            close(new_socket);
+            return;
+        }
     } else {
         const char *http_response =
             "HTTP/1.1 200 OK\r\n"
