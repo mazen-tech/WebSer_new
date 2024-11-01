@@ -9,7 +9,8 @@ SRCS = src/main_content_length.cpp \
 		src/server_config/read_conf.cpp \
 		src/server_config/server.cpp \
 		src/server_config/find_file.cpp \
-		src/errors/ErrorPage.cpp
+		src/errors/ErrorPage.cpp \
+		src/confParsing.cpp
 
 OBJDIR = obj
 OBJS = $(SRCS:src/%.cpp=$(OBJDIR)/%.o)

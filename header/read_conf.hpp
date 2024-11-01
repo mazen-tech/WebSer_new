@@ -19,6 +19,7 @@
 #include <sys/wait.h>
 #include <netinet/in.h>
 #include <dirent.h>
+#include "confParsing.hpp"
 
 int met_get(char *buffer, int new_socket);
 int met_post(char *buffer, int new_socket);
@@ -28,6 +29,7 @@ bool find_file(const std::string& dir, const std::string& target, std::string& f
 class Read_conf
 {
 private:
+    confParsing config;
     std::string path; //document root path
     int port;
     size_t size;
@@ -46,6 +48,7 @@ public:
     int getSize();
     int getPort();
 
+    bool loadConfig(const std::string &configFile);
     //new method
     std::string getDocumentRoot();
     enum

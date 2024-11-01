@@ -4,7 +4,7 @@ Read_conf::Read_conf() : path("/default/path"), port(8080), size(0) {}
 
 // Parameterized constructor with config file path
 Read_conf::Read_conf(const std::string& configFile) : path("/default/path"), port(8080), size(0) {
-    std::ifstream file(configFile);
+    /*std::ifstream file(configFile);
     if (!file.is_open()) {
         std::cerr << "Error:Read_conf: Could not open configuration file at " << configFile << std::endl;
         return;
@@ -18,9 +18,18 @@ Read_conf::Read_conf(const std::string& configFile) : path("/default/path"), por
             if (key == "port") port = std::stoi(value);
             else if (key == "document_root") path = value;
         }
-    }
+    }*/
+   loadConfig(configFile);
 }
 
+bool Read_conf::loadConfig(const std::string &configFile) {
+    if (parseConfigFile(configFile, config)) { // Assuming parseConfigFile is your method from confParsing
+        port = config.listen; // Update port from config
+        path = config.root;   // Update document root from config
+        return true;
+    }
+    return false;
+}
 
 Read_conf::~Read_conf()
 {
