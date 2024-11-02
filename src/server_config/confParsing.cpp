@@ -1,42 +1,6 @@
-#include <iostream>
-#include <fstream>
-#include <sstream>
-#include <string>
-#include <map>
-#include <vector>
-#include <regex>
+#include "../../header/confParsing.hpp"
 
-class ServerConfig {
-public:
-    int listen = 0;
-    std::string server_name;
-    std::string host;
-    std::string root;
-    int client_max_body_size = 0;
-    std::string index;
-    std::string error_page;
-    std::map<std::string, std::vector<std::string>> locations;
-
-    void display() const {
-        std::cout << "Server Configuration:" << std::endl;
-        std::cout << "Listen: " << listen << std::endl;
-        std::cout << "Server Name: " << server_name << std::endl;
-        std::cout << "Host: " << host << std::endl;
-        std::cout << "Root: " << root << std::endl;
-        std::cout << "Client Max Body Size: " << client_max_body_size << std::endl;
-        std::cout << "Index: " << index << std::endl;
-        std::cout << "Error Page: " << error_page << std::endl;
-        
-        for (const auto& location : locations) {
-            std::cout << "Location: " << location.first << std::endl;
-            for (const auto& method : location.second) {
-                std::cout << "  Method: " << method << std::endl;
-            }
-        }
-    }
-};
-
-bool parseConfigFile(const std::string& filename, ServerConfig& config) {
+bool parseConfigFile(const std::string& filename, confParsing& config) {
     std::ifstream file(filename);
     if (!file.is_open()) {
         std::cerr << "Error: Could not open file " << filename << std::endl;
@@ -106,14 +70,21 @@ bool parseConfigFile(const std::string& filename, ServerConfig& config) {
     return true;
 }
 
-int main() {
-    ServerConfig config;
-
-    if (parseConfigFile("config.conf", config)) {
-        config.display();
-    } else {
-        std::cerr << "Failed to parse configuration file." << std::endl;
+void confParsing::display() const {
+        std::cout << "Server Configuration:" << std::endl;
+        std::cout << "Listen: " << listen << std::endl;
+        std::cout << "Server Name: " << server_name << std::endl;
+        std::cout << "Host: " << host << std::endl;
+        std::cout << "Root: " << root << std::endl;
+        std::cout << "Client Max Body Size: " << client_max_body_size << std::endl;
+        std::cout << "Index: " << index << std::endl;
+        std::cout << "Error Page: " << error_page << std::endl;
+        
+        for (const auto& location : locations) {
+            std::cout << "Location: " << location.first << std::endl;
+            for (const auto& method : location.second) {
+                std::cout << "  Method: " << method << std::endl;
+            }
+        }
     }
 
-    return 0;
-}

@@ -3,22 +3,8 @@
 Read_conf::Read_conf() : path("/default/path"), port(8080), size(0) {}
 
 // Parameterized constructor with config file path
-Read_conf::Read_conf(const std::string& configFile) : path("/default/path"), port(8080), size(0) {
-    /*std::ifstream file(configFile);
-    if (!file.is_open()) {
-        std::cerr << "Error:Read_conf: Could not open configuration file at " << configFile << std::endl;
-        return;
-    }
-
-    std::string line;
-    while (std::getline(file, line)) {
-        std::istringstream iss(line);
-        std::string key, value;
-        if (std::getline(iss, key, '=') && std::getline(iss, value)) {
-            if (key == "port") port = std::stoi(value);
-            else if (key == "document_root") path = value;
-        }
-    }*/
+Read_conf::Read_conf(const std::string& configFile) : path("/default/path"), port(8080), size(0) 
+{
    loadConfig(configFile);
 }
 

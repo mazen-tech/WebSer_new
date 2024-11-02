@@ -2,15 +2,15 @@ CC = c++
 CFLAGS = -Wall -Wextra -Werror
 # SRCS = src/main.cpp
 # SRCS = src/main_jp_test.cpp
-SRCS = src/main_content_length.cpp \
+SRCS = src/main.cpp \
 		src/methods/method_get.cpp \
 		src/methods/method_post.cpp \
 		src/methods/method_delete.cpp \
 		src/server_config/read_conf.cpp \
 		src/server_config/server.cpp \
 		src/server_config/find_file.cpp \
-		src/errors/ErrorPage.cpp \
-		src/confParsing.cpp
+		src/server_config/confParsing.cpp \
+		src/errors/ErrorPage.cpp
 
 OBJDIR = obj
 OBJS = $(SRCS:src/%.cpp=$(OBJDIR)/%.o)
