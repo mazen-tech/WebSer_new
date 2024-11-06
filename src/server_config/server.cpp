@@ -3,6 +3,7 @@
 
 Server::Server(int port) {
     server_fd = socket(AF_INET, SOCK_STREAM, 0);
+    stat_to_close = "0";
     if (server_fd == 0) {
         std::cerr << "Failed to create socket\n";
         exit(EXIT_FAILURE);
@@ -80,6 +81,10 @@ void Server::handleConnection(int new_socket) {
     std::string request;
 
     request = save_request(new_socket);
+    if (stat_to_close == "1")
+    {
+        return ;
+    }
     stat_code = "200";
     if (request.find("POST /") != std::string::npos)
     {
@@ -91,7 +96,7 @@ void Server::handleConnection(int new_socket) {
         }
         else 
         {
-            std::cout << RED << "Response sent to client " << RESET << "[POST]" << RED << " with status code: " << RESET << stat_code << std::endl;
+            std::cout << RED << "Response sent to client " << RESET << new_socket << " " << "[POST]" << RED << " with status code: " << RESET << stat_code << std::endl;
         }
     }
     else if (request.find("GET /") != std::string::npos)
@@ -103,7 +108,7 @@ void Server::handleConnection(int new_socket) {
         }
         else 
         {
-            std::cout << YELLOW << "Response sent to client " << RESET << "[GET]" << YELLOW << " with status code: " << RESET << stat_code << std::endl;
+            std::cout << YELLOW << "Response sent to client " << RESET << new_socket << " " << "[GET]" << YELLOW << " with status code: " << RESET << stat_code << std::endl;
         }
 
     }
@@ -119,5 +124,6 @@ void Server::handleConnection(int new_socket) {
         std::cout << BLUE << "Response sent to client [Generic]" << RESET << std::endl;
     }
 
+    epoll_ctl(epoll_fd, EPOLL_CTL_DEL, new_socket, NULL);
     close(new_socket);
 }
