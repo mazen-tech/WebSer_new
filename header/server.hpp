@@ -12,6 +12,9 @@ public:
     Server(int port);
     ~Server();
     void start();
+    int epoll_fd;
+    struct epoll_event ev;
+    struct epoll_event events[MAX_EVENTS];
 
 private:
     int server_fd;

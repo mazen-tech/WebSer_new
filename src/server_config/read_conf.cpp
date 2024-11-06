@@ -9,9 +9,10 @@ Read_conf::Read_conf(const std::string& configFile) : path("/default/path"), por
 }
 
 bool Read_conf::loadConfig(const std::string &configFile) {
-    if (parseConfigFile(configFile, config)) { // Assuming parseConfigFile is your method from confParsing
-        port = config.listen; // Update port from config
-        path = config.root;   // Update document root from config
+    if (config.parseConfigFile(configFile)) {
+        // Update port and path based on parsed configuration
+        port = config.getPort();
+        path = config.getPath();
         return true;
     }
     return false;
@@ -22,31 +23,20 @@ Read_conf::~Read_conf()
 
 }
 
-//#METHODS#
-int Read_conf::get_path_type(std::string const path)
-{
-    struct stat buf;
-    int res;
+//##METHODS##
 
-    res = stat(path.c_str(), &buf);
-    if (res == 0)
-    {
-        if (buf.st_mode & S_IFREG) //file
-            return (REGULAR_FILE);
-        else if (buf.st_mode & S_IFDIR) //directory
-            return (DIRECTORY);
-        else if (buf.st_mode & S_IFLNK) //links
-            return (SYM_LINK);
-        else if (buf.st_mode & S_IFCHR) //character device 
-            return (CHAR_DEV);
-        else 
-            return (OTHER); //sth else 
+int Read_conf::get_path_type(std::string const path) {
+    struct stat buf;
+    int res = stat(path.c_str(), &buf);
+    if (res == 0) {
+        if (buf.st_mode & S_IFREG) return REGULAR_FILE;
+        if (buf.st_mode & S_IFDIR) return DIRECTORY;
+        if (buf.st_mode & S_IFLNK) return SYM_LINK;
+        if (buf.st_mode & S_IFCHR) return CHAR_DEV;
+        return OTHER;
     }
-    else 
-    {
-        std::cerr << "Error retrieving path info : " << strerror(errno) << std::endl;
-        return (-1);
-    }
+    std::cerr << "Error retrieving path info: " << strerror(errno) << std::endl;
+    return -1;
 }
 
 /*

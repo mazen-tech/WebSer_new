@@ -1,38 +1,22 @@
-#pragma once 
+#ifndef CONFIGPARSER_HPP
+#define CONFIGPARSER_HPP
 
-#include <iostream>
-#include <fstream>
-#include <sstream>
 #include <string>
 #include <map>
-#include <vector>
-#include <regex>
 
-/*class confParsing
-{
+class ConfigParser {
+public:
+    ConfigParser() = default;
+    bool parseConfigFile(const std::string& filepath); // Parses the file and stores the result
+    int getPort() const;     // Retrieves the port
+    std::string getPath() const; // Retrieves the path (root directory)
+
 private:
-    std::map<std::string, std::string> configSittings;
-
-public:
-    confParsing() = default;
-    bool loadConfigFile(const std::string &configFile);
-    bool hasSitting(const std::string &key) const;
-    std::string getSetting(const std::string &key) const;
+    std::map<std::string, std::map<std::string, std::string>> config;
+    int port = 8080;           // Default port
+    std::string path = "/default/path";  // Default path
+    void parseDirective(const std::string& line, const std::string& context);
+    void trim(std::string& str);
 };
 
-*/
-class confParsing {
-public:
-    int listen = 0;
-    std::string server_name;
-    std::string host;
-    std::string root;
-    int client_max_body_size = 0;
-    std::string index;
-    std::string error_page;
-    std::map<std::string, std::vector<std::string>> locations;
-
-    void display() const;
-};
-
-bool parseConfigFile(const std::string& filename, confParsing& config);
+#endif // CONFIGPARSER_HPP

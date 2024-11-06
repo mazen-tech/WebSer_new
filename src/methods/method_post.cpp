@@ -60,9 +60,10 @@ int met_post(char *buffer, int new_socket)
         const char *python_path = "/usr/bin/python3";
         const char *script_path = "./src/cgi/mycgi.py";
         const char *filename_cstr = filename.c_str();
+        const char *method = "POST";
         // const char *page = file_name.c_str();
         // PASS REQUESTED PAGE (eg. index.html) AS ARG
-        const char *args[] = {python_path, script_path, filename_cstr, NULL};
+        const char *args[] = {python_path, script_path, filename_cstr, method, NULL};
         // std::string qs = "QUERY_STRING=" + (std::string)query_string;
         // std::cout << qs << std::endl;
         char *envp[] = {
@@ -108,7 +109,7 @@ int met_post(char *buffer, int new_socket)
         //     "\n"
         //     "<h1>Wynik skryptu CGI</h1>";
         // send(new_socket, http_response, strlen(http_response), 0);
-        //std::cout << "Odpowiedź CGI została wysłana do klienta\n";
+        std::cout << "Odpowiedź CGI została wysłana do klienta\n";
     }
 
     delete[] post_data;

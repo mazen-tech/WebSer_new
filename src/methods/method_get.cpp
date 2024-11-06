@@ -17,6 +17,8 @@ int met_get(char *buffer, int new_socket)
         query_params = full_uri.substr(query_pos + 1); // część po "?"
     } else {
         file_name = full_uri; // brak query string
+        if (file_name.length() == 0)
+            file_name = "index.html";
     }
 
     std::string file_path;
@@ -40,8 +42,9 @@ int met_get(char *buffer, int new_socket)
         const char *python_path = "/usr/bin/python3";
         const char *script_path = "./src/cgi/mycgi.py";
         const char *page = file_name.c_str();
+        const char *method = "GET";
         // PASS REQUESTED PAGE (eg. index.html) AS ARG
-        const char *args[] = {python_path, script_path, page, NULL};
+        const char *args[] = {python_path, script_path, page, method, NULL};
         std::string qs = "QUERY_STRING=" + (std::string)query_string;
         // std::cout << qs << std::endl;
         char *envp[] = {

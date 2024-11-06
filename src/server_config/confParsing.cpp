@@ -1,4 +1,4 @@
-#include "../../header/confParsing.hpp"
+/*#include "../../header/confParsing.hpp"
 
 bool parseConfigFile(const std::string& filename, confParsing& config) {
     std::ifstream file(filename);
@@ -47,6 +47,8 @@ bool parseConfigFile(const std::string& filename, confParsing& config) {
                 std::string key = match[1].str();
                 std::string value = match[2].str();
 
+                std::cout << "Parsing key: " << key << ", value: " << value << std::endl;
+
                 if (key == "listen") {
                     config.listen = std::stoi(value);
                 } else if (key == "server_name") {
@@ -86,5 +88,90 @@ void confParsing::display() const {
                 std::cout << "  Method: " << method << std::endl;
             }
         }
+    }*/
+
+
+#include "../../header/confParsing.hpp"
+#include <fstream>
+#include <sstream>
+#include <regex>
+#include <iostream>
+
+bool ConfigParser::parseConfigFile(const std::string& filepath) {
+    std::ifstream file(filepath);
+    if (!file.is_open()) {
+        std::cerr << "Error opening file: " << filepath << std::endl;
+        return false;
     }
+
+    std::string line;
+    std::string currentLocation;
+
+    while (std::getline(file, line)) {
+        trim(line);
+
+        // Skip comments and empty lines
+        if (line.empty() || line[0] == '#') continue;
+
+        // Check for server block
+        if (line.find("server {") != std::string::npos) {
+            currentLocation.clear();
+            continue;
+        }
+
+        // Check for location block
+        std::smatch match;
+        if (std::regex_search(line, match, std::regex(R"(location\s+(\S+)\s*\{)"))) {
+            currentLocation = match[1];
+            continue;
+        }
+
+        // Parse configuration directives
+        if (!currentLocation.empty()) {
+            parseDirective(line, currentLocation);
+        } else {
+            parseDirective(line, "global");
+        }
+    }
+
+    file.close();
+
+    // Extract needed data (port and path)
+    if (config["global"].count("listen") > 0) {
+        port = std::stoi(config["global"]["listen"]);
+    }
+    if (config["global"].count("root") > 0) {
+        path = config["global"]["root"];
+    }
+
+    return true;
+}
+
+void ConfigParser::parseDirective(const std::string& line, const std::string& context) {
+    std::smatch match;
+    if (std::regex_search(line, match, std::regex(R"(\s*(\S+)\s+(.+);)"))) {
+        std::string key = match[1];
+        std::string value = match[2];
+        config[context][key] = value;
+    }
+}
+
+void ConfigParser::trim(std::string& str) {
+    str.erase(str.begin(), std::find_if(str.begin(), str.end(), [](unsigned char ch) {
+        return !std::isspace(ch);
+    }));
+    str.erase(std::find_if(str.rbegin(), str.rend(), [](unsigned char ch) {
+        return !std::isspace(ch);
+    }).base(), str.end());
+}
+
+int ConfigParser::getPort() const {
+    return port;
+}
+
+std::string ConfigParser::getPath() const {
+    return path;
+}
+
+
 

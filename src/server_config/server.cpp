@@ -1,5 +1,5 @@
 #include "../../header/server.hpp"
-
+#include "../../header/read_conf.hpp"
 
 Server::Server(int port) {
     server_fd = socket(AF_INET, SOCK_STREAM, 0);
@@ -22,6 +22,7 @@ Server::Server(int port) {
 
 Server::~Server() {
     close(server_fd);
+    close(epoll_fd);
 }
 
 void Server::configureSocket() {
@@ -39,27 +40,51 @@ void Server::listenForConnections() {
         exit(EXIT_FAILURE);
     }
 
+    epoll_fd = epoll_create1(EPOLL_CLOEXEC); // flaga zamykajaca automatycznie deskryptor
+    ev.events = EPOLLIN | EPOLLOUT; // okresla jakie typy eventow ma monitorowac
+    // w naszym przypadku odczyt i zapis
+    ev.data.fd = server_fd;
+    epoll_ctl(epoll_fd, EPOLL_CTL_ADD, server_fd, &ev);// pozwala zarzadzac zdarzeniami w kolejce
+    // EPOLL_CTL_ADD dodaje desktyptor pliku do epolla
+
     std::cout << GREEN << "Server is running...\n" << RESET;
     std::cout << GREEN << "Server is listening on port.... " << RESET << std::endl; 
 
     while (true) {
-        int addrlen = sizeof(address);
-        int new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t*)&addrlen);
-        if (new_socket < 0) {
-            std::cerr << "Connection error\n";
-            continue;
+        int nfds = epoll_wait(epoll_fd, events, MAX_EVENTS, -1);// bedzie czekac na zdarzenia oraz je monitor
+        for (int i = 0; i < nfds; i ++)
+        {
+            if (events[i].data.fd == server_fd) //oznacza to ze mamy nowe polaczenie przychodzace
+            {
+                int addrlen = sizeof(address);
+                int new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t*)&addrlen);
+                if (new_socket < 0) {
+                    std::cerr << "Connection error\n";
+                    continue;
+                }
+                ev.events = EPOLLIN | EPOLLOUT;
+                ev.data.fd = new_socket;
+                epoll_ctl(epoll_fd, EPOLL_CTL_ADD, new_socket, &ev);
+            }
+            else
+            {
+                handleConnection(events[i].data.fd);
+                close(events[i].data.fd);
+            }
         }
 
-        handleConnection(new_socket);
     }
 }
 
 void Server::handleConnection(int new_socket) {
-    char buffer[1024] = {0};
-    read(new_socket, buffer, 1024);
+    std::string request;
 
-    /*if (strstr(buffer, "POST /") != nullptr) {
-        if (met_post(buffer, new_socket)) {
+    request = save_request(new_socket);
+    if (request.find("POST /") != std::string::npos)
+    {
+        
+        if (met_post((char *)request.c_str(), new_socket))
+        {
             std::cerr << "POST request handling failed\n";
             return;
         }
@@ -67,8 +92,11 @@ void Server::handleConnection(int new_socket) {
         {
             std::cout << RED << "Response sent to client " << RESET << "[POST]" << std::endl;
         }
-    } else if (strstr(buffer, "GET /") != nullptr) {
-        if (met_get(buffer, new_socket)) {
+    }
+    else if (request.find("GET /") != std::string::npos)
+    {
+        if (met_get((char *)request.c_str(), new_socket))
+        {
             std::cerr << "GET request handling failed\n";
             return;
         }
@@ -77,24 +105,9 @@ void Server::handleConnection(int new_socket) {
             std::cout << YELLOW << "Response sent to client " << RESET << "[GET]" << std::endl;
         }
 
-    }*/
-    if (strstr(buffer, "POST /") != nullptr) {
-        if (met_post(buffer, new_socket)) {
-            std::string errorResponse = _errorPage.getErrPage(500); // Internal Server Error
-            send(new_socket, errorResponse.c_str(), errorResponse.size(), 0);
-            std::cerr << "Error: Failed to handle POST request\n";
-            close(new_socket);
-            return;
-        }
-    } else if (strstr(buffer, "GET /") != nullptr) {
-        if (met_get(buffer, new_socket)) {
-            std::string errorResponse = _errorPage.getErrPage(404); // Not Found
-            send(new_socket, errorResponse.c_str(), errorResponse.size(), 0);
-            std::cerr << "Error: Failed to handle GET request\n";
-            close(new_socket);
-            return;
-        }
-    } else {
+    }
+    else
+    {
         const char *http_response =
             "HTTP/1.1 200 OK\r\n"
             "Content-Type: text/html\r\n"
