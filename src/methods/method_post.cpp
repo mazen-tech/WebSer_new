@@ -51,7 +51,8 @@ int Server::met_post(char *buffer, int new_socket)
             size_t pos_start = std::string(buf).find("\r\n\r\n");
             size_t pos_end = std::string(buf + pos_start + 4).find("------WebKitFormBoundary"); 
             std::string output = std::string(buf + pos_start + 4).substr(0, pos_end - 4);
-            std::ofstream file(file_name);
+            std::string file_location = std::string(config->getCwd()) + std::string("/src/uploads/");
+            std::ofstream file(file_location + file_name);
             if (file.is_open()) {
                 file << output;
                 file.close();

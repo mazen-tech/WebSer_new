@@ -98,3 +98,14 @@ std::string Read_conf::read_File(std::string file_path)
     conf_file_stream << configuration_file.rdbuf(); //read content into stringstream
     return (conf_file_stream.str());//returning content as a string
 }
+
+void Read_conf::setCwd(std::string cwd_path)
+{
+    this->cwd = cwd_path;
+}
+
+std::string Read_conf::getCwd()
+{
+    return this->cwd;
+}
+

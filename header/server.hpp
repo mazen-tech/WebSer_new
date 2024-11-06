@@ -15,6 +15,7 @@ public:
     int epoll_fd;
     struct epoll_event ev;
     struct epoll_event events[MAX_EVENTS];
+    Read_conf *config;
 
 private:
     int server_fd;

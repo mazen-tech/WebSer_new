@@ -3,8 +3,6 @@ import sys
 from datetime import datetime, timedelta
 import re
 
-print("stat_cod: 200")
-
 def parse_args(qs):
     if '?' not in qs:
         return
@@ -57,6 +55,7 @@ def insert_env(line):
     return part_one + middle + part_two
 
 def render(page, dir):
+    print("stat_cod: 200")
     with open(f"src/cgi/{dir}/{page}") as source:
         for line in source:
             if ('{{' in line and '}}' in line):
@@ -95,6 +94,7 @@ try:
     elif 'css' in page and page in css_pages:
         render(page, 'style')
     else:
-        print("HTTP/1.1 404 Not Found\r\n")
+        print("stat_cod: 404")
 except:
-    print("HTTP/1.1 500 Internal Server Error\r\n")
+    print("stat_cod: 500")
+    

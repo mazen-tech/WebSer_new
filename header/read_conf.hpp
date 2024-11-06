@@ -109,6 +109,7 @@ private:
     std::string path; //document root path
     int port;
     size_t size;
+    std::string cwd;
 
 public:
     Read_conf();
@@ -121,6 +122,8 @@ public:
     std::string read_File(std::string file_path);
 
     std::string getPath();
+    void setCwd(std::string cwd_path);
+    std::string getCwd();
     int getSize();
     int getPort();
 
