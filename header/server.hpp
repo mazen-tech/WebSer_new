@@ -25,6 +25,9 @@ private:
     void configureSocket();
     void listenForConnections();
     void handleConnection(int new_socket);
+    int met_post(char *buffer, int new_socket);
+    int met_get(char *buffer, int new_socket);
+    std::string stat_code;
 };
 
 #endif // SERVER_HPP

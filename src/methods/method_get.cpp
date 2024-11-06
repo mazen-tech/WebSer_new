@@ -1,6 +1,7 @@
 #include "../../header/read_conf.hpp"
+#include "../../header/server.hpp"
 
-int met_get(char *buffer, int new_socket)
+int Server::met_get(char *buffer, int new_socket)
 {
     char* query_string = strstr(buffer, "GET /") + 5;
     char* end_of_uri = strchr(query_string, ' ');
@@ -104,6 +105,7 @@ int met_get(char *buffer, int new_socket)
         else
         {
             // Obsługa błędu 404
+            stat_code = "404";
             std::string error_response = "HTTP/1.1 404 Not Found\r\n"
                                         "Content-Length: 0\r\n"
                                         "Connection: close\r\n\r\n";
@@ -113,6 +115,7 @@ int met_get(char *buffer, int new_socket)
     else
     {
         // Obsługa błędu 404
+        stat_code = "404";
         std::string error_response = "HTTP/1.1 404 Not Found\r\n"
                                     "Content-Length: 0\r\n"
                                     "Connection: close\r\n\r\n";

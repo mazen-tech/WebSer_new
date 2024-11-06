@@ -80,29 +80,30 @@ void Server::handleConnection(int new_socket) {
     std::string request;
 
     request = save_request(new_socket);
+    stat_code = "200";
     if (request.find("POST /") != std::string::npos)
     {
         
-        if (met_post((char *)request.c_str(), new_socket))
+        if (Server::met_post((char *)request.c_str(), new_socket))
         {
             std::cerr << "POST request handling failed\n";
             return;
         }
         else 
         {
-            std::cout << RED << "Response sent to client " << RESET << "[POST]" << std::endl;
+            std::cout << RED << "Response sent to client " << RESET << "[POST]" << RED << " with status code: " << RESET << stat_code << std::endl;
         }
     }
     else if (request.find("GET /") != std::string::npos)
     {
-        if (met_get((char *)request.c_str(), new_socket))
+        if (Server::met_get((char *)request.c_str(), new_socket))
         {
             std::cerr << "GET request handling failed\n";
             return;
         }
         else 
         {
-            std::cout << YELLOW << "Response sent to client " << RESET << "[GET]" << std::endl;
+            std::cout << YELLOW << "Response sent to client " << RESET << "[GET]" << YELLOW << " with status code: " << RESET << stat_code << std::endl;
         }
 
     }

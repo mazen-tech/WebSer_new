@@ -1,4 +1,5 @@
 #include "../../header/read_conf.hpp"
+#include "../../header/server.hpp"
 
 std::string f_name ( std::string request )
 {
@@ -17,7 +18,7 @@ std::string f_name ( std::string request )
     return (filename);
 }
 
-int met_post(char *buffer, int new_socket)
+int Server::met_post(char *buffer, int new_socket)
 {
     int pipe_fd[2];
     int pipe_from_python[2];
@@ -115,12 +116,16 @@ int met_post(char *buffer, int new_socket)
 
         // Zamknij potok po odczytaniu danych
         close(pipe_from_python[0]);
-
+        // std::cout << buffer << std::endl;
+        std::string sta_code = std::string(strstr(buffer, "stat_cod: ") + 10).substr(0, 3);
+        // std::cout << sta_code << std::endl;
+        // std::cout << count << std::endl;
         std::string http_response = "HTTP/1.1 200 OK\r\n"
         "Content-Type: text/html\r\n"
         "Content-Length: " + std::to_string(count) + "\r\n"
-        "Connection: close\r\n\r\n" + std::string(buffer);
+        "Connection: close\r\n\r\n" + std::string(buffer + 14);
         // std::cout << http_response << std::endl;
+        stat_code = sta_code;
         send(new_socket, http_response.c_str(), http_response.size(), 0);
 
         // Zwracanie odpowiedzi HTTP (np. wyniku skryptu CGI)

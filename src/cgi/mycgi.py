@@ -3,6 +3,8 @@ import sys
 from datetime import datetime, timedelta
 import re
 
+print("stat_cod: 200")
+
 def parse_args(qs):
     if '?' not in qs:
         return
