@@ -40,7 +40,6 @@ std::string save_request(int new_socket)
 
         buffer[bytes_read] = '\0';
         request.append(buffer, bytes_read);
-        std::cout << request.length() << std::endl;
     }
     return (request);
 }

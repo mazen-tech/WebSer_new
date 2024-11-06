@@ -28,10 +28,10 @@
 
 int main() {
     // Initialize Read_conf with the config file path
-    Read_conf config("/nfs/homes/bkotwica/WebSer_new/configurations/config.conf");
+    Read_conf config("/home/bartosz/Projects/WebSer_new/configurations/config.conf");
 
     // Create the server instance after loading the configuration
-    if (config.loadConfig("/nfs/homes/bkotwica/WebSer_new/configurations/config.conf")) {
+    if (config.loadConfig("/home/bartosz/Projects/WebSer_new/configurations/config.conf")) {
         std::cout << "Loaded configuration successfully!" << std::endl;
         
         std::cout << "Listening Port in main: " << config.getPort() << std::endl;

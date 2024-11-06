@@ -112,7 +112,7 @@ private:
 
 public:
     Read_conf();
-    Read_conf(const std::string &configFile = "/nfs/homes/bkotwica/WebSer_new/configurations/config.conf");
+    Read_conf(const std::string &configFile = "/home/bartosz/Projects/WebSer_new/configurations/config.conf");
     ~Read_conf();
 
     static int get_path_type(std::string const path);
