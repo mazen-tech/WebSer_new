@@ -93,6 +93,7 @@ void Server::handleConnection(int new_socket) {
             std::cout << RED << "Response sent to client " << RESET << "[POST]" << std::endl;
         }
     }
+
     else if (request.find("GET /") != std::string::npos)
     {
         if (met_get((char *)request.c_str(), new_socket))
@@ -106,6 +107,20 @@ void Server::handleConnection(int new_socket) {
         }
 
     }
+
+    else if (request.find("DELETE /") != std::string::npos)
+    {
+        if (met_delete((char *)request.c_str(), new_socket))
+        {
+            std::cerr << "Delete request handling failed\n";
+            return;
+        }
+        else 
+        {
+            std::cout << PURPLE << "Response sent to client " << RESET << "[DELETE]" << std::endl;
+        }
+    }
+
     else
     {
         const char *http_response =
