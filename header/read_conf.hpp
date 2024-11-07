@@ -26,9 +26,6 @@
 #include "confParsing.hpp"
 
 std::string save_request(int new_socket);
-int met_get(char *buffer, int new_socket);
-int met_delete(char *buffer, int new_socket);
-int met_post(char *buffer, int new_socket);
 bool find_file(const std::string& dir, const std::string& target, std::string& found_path);
 
 
@@ -43,10 +40,11 @@ private:
     std::string path; //document root path
     int port;
     size_t size;
+    std::string cwd;
 
 public:
     Read_conf();
-    Read_conf(const std::string &configFile = "/mnt/c/Users/miche/OneDrive/Desktop/cpp/WebServ/configurations/config.conf");
+    Read_conf(const std::string &configFile = "/home/bartosz/Projects/WebSer_new/configurations/config.conf");
     ~Read_conf();
 
     static int get_path_type(std::string const path);
@@ -55,6 +53,8 @@ public:
     std::string read_File(std::string file_path);
 
     std::string getPath();
+    void setCwd(std::string cwd_path);
+    std::string getCwd();
     int getSize();
     int getPort();
 

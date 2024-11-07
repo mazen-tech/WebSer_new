@@ -1,5 +1,5 @@
 CC = c++
-CFLAGS = -Wall -Wextra -Werror
+CFLAGS = 
 # SRCS = src/main.cpp
 # SRCS = src/main_jp_test.cpp
 SRCS = src/main.cpp \
@@ -29,6 +29,7 @@ $(OBJDIR)/%.o: src/%.cpp
 
 clean:
 	rm -f $(OBJS)
+	rm -rf obj
 
 fclean: clean
 	rm -f $(EXEC)

@@ -1,4 +1,5 @@
 #include "../../header/read_conf.hpp"
+#include "../../header/server.hpp"
 
 std::string f_name ( std::string request )
 {
@@ -17,7 +18,7 @@ std::string f_name ( std::string request )
     return (filename);
 }
 
-int met_post(char *buffer, int new_socket)
+int Server::met_post(char *buffer, int new_socket)
 {
     int pipe_fd[2];
     int pipe_from_python[2];
@@ -37,13 +38,35 @@ int met_post(char *buffer, int new_socket)
     {
         sscanf(content_length_str, "Content-Length: %d", &content_length);
     }
+    char *multi = strstr(buffer, "Content-Type: multipart/form-data;"); 
+    if (multi != NULL)
+    {
+        char *buf = strstr(multi + 1, "Content-Type: ");
+        char *con_disp = strstr(multi, "Content-Disposition: ");
+        char *file_name_start = strstr(multi, "filename=") + 10;
+        int pos = std::string(file_name_start).find("\"");
+        std::string file_name = std::string(file_name_start).substr(0, pos);
+        if (buf != NULL)
+        {
+            size_t pos_start = std::string(buf).find("\r\n\r\n");
+            size_t pos_end = std::string(buf + pos_start + 4).find("------WebKitFormBoundary"); 
+            std::string output = std::string(buf + pos_start + 4).substr(0, pos_end - 4);
+            std::string file_location = std::string(config->getCwd()) + std::string("/src/uploads/");
+            std::ofstream file(file_location + file_name);
+            if (file.is_open()) {
+                file << output;
+                file.close();
+            } else
+                std::cerr << "Cannot open file." << std::endl;
+        }
+    }
     // // Tworzenie bufora na dane POST
     char *post_data = new char[content_length + 1]();
     // read(new_socket, post_data, content_length);
     std::string line = strstr(buffer, "\r\n\r\n");
     // // Utworzenie procesu potomnego dla skryptu CGI
     pid_t pid = fork();
-    
+    // std::cout << buffer << std::endl;
     if (pid == 0)
     {  // Proces potomny
         close(pipe_fd[1]);
@@ -94,11 +117,16 @@ int met_post(char *buffer, int new_socket)
 
         // Zamknij potok po odczytaniu danych
         close(pipe_from_python[0]);
-
+        // std::cout << buffer << std::endl;
+        std::string sta_code = std::string(strstr(buffer, "stat_cod: ") + 10).substr(0, 3);
+        // std::cout << sta_code << std::endl;
+        // std::cout << count << std::endl;
         std::string http_response = "HTTP/1.1 200 OK\r\n"
         "Content-Type: text/html\r\n"
         "Content-Length: " + std::to_string(count) + "\r\n"
-        "Connection: close\r\n\r\n" + std::string(buffer);
+        "Connection: close\r\n\r\n" + std::string(buffer + 14);
+        // std::cout << http_response << std::endl;
+        stat_code = sta_code;
         send(new_socket, http_response.c_str(), http_response.size(), 0);
 
         // Zwracanie odpowiedzi HTTP (np. wyniku skryptu CGI)
@@ -109,7 +137,7 @@ int met_post(char *buffer, int new_socket)
         //     "\n"
         //     "<h1>Wynik skryptu CGI</h1>";
         // send(new_socket, http_response, strlen(http_response), 0);
-        std::cout << "Odpowiedź CGI została wysłana do klienta\n";
+        // std::cout << "Odpowiedź CGI została wysłana do klienta\n";
     }
 
     delete[] post_data;

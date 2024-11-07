@@ -27,11 +27,22 @@
 }*/
 
 int main() {
+
+    char buffer[PATH_MAX];
+    if (getcwd(buffer, PATH_MAX)) {
+        std::cout << "Current working directory: " << buffer << std::endl;
+    } else {
+        std::cerr << "Error getting current working directory" << std::endl;
+        return 1;
+    }
+    std::string path = std::string(buffer) + std::string("/configurations/config.conf");
+
     // Initialize Read_conf with the config file path
-    Read_conf config("/mnt/c/Users/miche/OneDrive/Desktop/WebSer_new/configurations/config.conf");
+    Read_conf config(path.c_str());
+    config.setCwd(buffer);
 
     // Create the server instance after loading the configuration
-    if (config.loadConfig("/mnt/c/Users/miche/OneDrive/Desktop/WebSer_new/configurations/config.conf")) {
+    if (config.loadConfig(path.c_str())) {
         std::cout << "Loaded configuration successfully!" << std::endl;
         
         std::cout << "Listening Port in main: " << config.getPort() << std::endl;
@@ -46,6 +57,7 @@ int main() {
     if (config.getPort() == 8080) {
         // Create the Server instance using the loaded port
         Server server(config.getPort());
+        server.config = &config;
         server.start();
     } else {
         std::cerr << "Configuration not loaded properly. Exiting...\n";
