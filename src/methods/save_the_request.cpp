@@ -1,6 +1,7 @@
 #include "../../header/read_conf.hpp"
+#include "../../header/server.hpp"
 
-std::string save_request(int new_socket)
+std::string Server::save_request(int new_socket)
 {
     char buffer[2048] = {0};
     ssize_t bytes_read;
@@ -12,7 +13,10 @@ std::string save_request(int new_socket)
     {
         bytes_read = read(new_socket, buffer, sizeof(buffer) - 1);
         if (bytes_read <= 0)
-            break;
+        {
+            stat_to_close = 1;
+            return "";
+        }
 
         buffer[bytes_read] = '\0';
         request += buffer;
@@ -36,11 +40,13 @@ std::string save_request(int new_socket)
     {
         bytes_read = read(new_socket, buffer, sizeof(buffer) - 1);
         if (bytes_read <= 0)
-            break;
+        {
+            stat_to_close = 1;
+            return "";
+        }
 
         buffer[bytes_read] = '\0';
         request.append(buffer, bytes_read);
-        std::cout << request.length() << std::endl;
     }
     return (request);
 }
