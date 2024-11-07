@@ -91,7 +91,7 @@ void Server::handleConnection(int new_socket) {
     if (request.find("POST /") != std::string::npos)
     {
         
-        if (Server::met_post((char *)request.c_str(), new_socket))
+        if (met_post((char *)request.c_str(), new_socket))
         {
             std::cerr << "POST request handling failed\n";
             return;
@@ -104,7 +104,7 @@ void Server::handleConnection(int new_socket) {
 
     else if (request.find("GET /") != std::string::npos)
     {
-        if (Server::met_get((char *)request.c_str(), new_socket))
+        if (met_get((char *)request.c_str(), new_socket))
         {
             std::cerr << "GET request handling failed\n";
             return;

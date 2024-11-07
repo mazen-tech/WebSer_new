@@ -28,6 +28,7 @@ private:
     void handleConnection(int new_socket);
     int met_post(char *buffer, int new_socket);
     int met_get(char *buffer, int new_socket);
+    int met_delete(char *buffer, int new_socket);
     std::string save_request(int new_socket);
     std::string stat_code;
     std::string stat_to_close;

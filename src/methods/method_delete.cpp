@@ -1,6 +1,8 @@
 #include "../../header/read_conf.hpp"
+#include "../../header/server.hpp"
 
-int met_delete(char *buffer, int new_socket) {
+
+int Server::met_delete(char *buffer, int new_socket) {
     // Adjust the pointer to capture the correct URI
     char *query_string = strstr(buffer, "DELETE /") + 7;
     char *end_of_uri = strchr(query_string, ' ');
