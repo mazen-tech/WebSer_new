@@ -64,21 +64,24 @@ int Server::met_get(char *buffer, int new_socket)
 
             char buffer[100000];
             ssize_t bytesRead = read(pipefd[0], buffer, sizeof(buffer) - 1);
-            if (bytesRead > 0) {
+            if (bytesRead > 0)
+            {
                 buffer[bytesRead] = '\0';
+                std::string sta_code = std::string(strstr(buffer, "stat_cod: ") + 10).substr(0, 3);
 
                 // Wysyłanie odpowiedzi CGI do klienta
-                std::string http_response = "HTTP/1.1 200 OK\r\n"
+                stat_code = sta_code;
+                std::string http_response = "HTTP/1.1 " + sta_code + " OK\r\n"
                                             "Content-Type: text/html\r\n"
                                             "Content-Length: " + std::to_string(bytesRead) + "\r\n"
-                                            "Connection: close\r\n\r\n" + std::string(buffer);
+                                            "Connection: close\r\n\r\n" + std::string(buffer + 14);
                 send(new_socket, http_response.c_str(), http_response.size(), 0);
             }
             close(pipefd[0]);
             waitpid(pid, nullptr, 0);
         }
     }
-    if (find_file("./src", file_name, file_path) && file_name.find(".tpl") == std::string::npos)
+    else if (find_file("./src", file_name, file_path))
     {
         // Obsługa pliku statycznego
         std::ifstream file(file_path);
@@ -109,6 +112,7 @@ int Server::met_get(char *buffer, int new_socket)
             std::string error_response = "HTTP/1.1 404 Not Found\r\n"
                                         "Content-Length: 0\r\n"
                                         "Connection: close\r\n\r\n";
+            std::cout << error_response << std::endl;
             send(new_socket, error_response.c_str(), error_response.size(), 0);
         }
     }
@@ -119,6 +123,8 @@ int Server::met_get(char *buffer, int new_socket)
         std::string error_response = "HTTP/1.1 404 Not Found\r\n"
                                     "Content-Length: 0\r\n"
                                     "Connection: close\r\n\r\n";
+        std::cout << buffer << std::endl;
+        // std::cout << error_response << std::endl;
         send(new_socket, error_response.c_str(), error_response.size(), 0);
     }
     return (0);

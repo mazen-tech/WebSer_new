@@ -59,7 +59,8 @@ void Server::listenForConnections() {
             {
                 int addrlen = sizeof(address);
                 int new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t*)&addrlen);
-                if (new_socket < 0) {
+                if (new_socket < 0)
+                {
                     std::cerr << "Connection error\n";
                     continue;
                 }
@@ -81,6 +82,7 @@ void Server::handleConnection(int new_socket) {
     std::string request;
 
     request = save_request(new_socket);
+    std::cout << request << std::endl;
     if (stat_to_close == "1")
     {
         return ;
