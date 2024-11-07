@@ -52,7 +52,7 @@ int main() {
         std::cerr << "Failed to load configuration." << std::endl;
         return -1;
     }
-    
+    // std::cout << config.config.config[0] << std::endl;
     // Check if port is valid (you can update the validation logic as needed)
     if (config.getPort() == 8080) {
         // Create the Server instance using the loaded port
