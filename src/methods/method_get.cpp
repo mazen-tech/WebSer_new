@@ -72,10 +72,23 @@ int Server::met_get(char *buffer, int new_socket)
 
                 // Wysyłanie odpowiedzi CGI do klienta
                 stat_code = sta_code;
-                std::string http_response = "HTTP/1.1 " + sta_code + " OK\r\n"
-                                            "Content-Type: text/html\r\n"
-                                            "Content-Length: " + std::to_string(bytesRead) + "\r\n"
-                                            "Connection: close\r\n\r\n" + std::string(buffer + 14);
+                std::string http_response;
+                if (stat_code != "200")
+                {
+                    http_response = "HTTP/1.1 " + sta_code + " Not found\r\n"
+                                                "Content-Type: text/html\r\n"
+                                                "Content-Length: " + std::to_string((_errorPage.getErrPage(std::stoi(sta_code))).length()) +
+                                                "\r\n\r\n" +
+                                                _errorPage.getErrPage(std::stoi(sta_code));
+                }
+                else
+                {
+                    http_response = "HTTP/1.1 " + sta_code + " OK\r\n"
+                                                "Content-Type: text/html\r\n"
+                                                "Content-Length: " + std::to_string(bytesRead) + "\r\n"
+                                                "Connection: close\r\n\r\n" + std::string(buffer + 14);
+                }
+                // std::cout << http_response << std::endl;
                 send(new_socket, http_response.c_str(), http_response.size(), 0);
             }
             close(pipefd[0]);
@@ -112,9 +125,11 @@ int Server::met_get(char *buffer, int new_socket)
         {
             // Obsługa błędu 404
             stat_code = "404";
-            std::string error_response = "HTTP/1.1 404 Not Found\r\n"
-                                        "Content-Length: 0\r\n"
-                                        "Connection: close\r\n\r\n";
+            std::string error_response = "HTTP/1.1 400 Bad request\r\n"
+                                        "Content-Type: text/html\r\n"
+                                        "Content-Length: " + std::to_string((_errorPage.getErrPage(404)).length()) +  "\r\n"
+                                        "\r\n\r\n" +
+                                        _errorPage.getErrPage(404);
             // std::cout << error_response << std::endl;
             send(new_socket, error_response.c_str(), error_response.size(), 0);
         }
@@ -152,9 +167,11 @@ int Server::met_get(char *buffer, int new_socket)
         {
             // Obsługa błędu 404
             stat_code = "404";
-            std::string error_response = "HTTP/1.1 404 Not Found\r\n"
-                                        "Content-Length: 0\r\n"
-                                        "Connection: close\r\n\r\n";
+            std::string error_response = "HTTP/1.1 400 Bad request\r\n"
+                                        "Content-Type: text/html\r\n"
+                                        "Content-Length: " + std::to_string((_errorPage.getErrPage(404)).length()) +  "\r\n"
+                                        "\r\n\r\n" +
+                                        _errorPage.getErrPage(404);
             // std::cout << error_response << std::endl;
             send(new_socket, error_response.c_str(), error_response.size(), 0);
         }
@@ -163,9 +180,11 @@ int Server::met_get(char *buffer, int new_socket)
     {
         // Obsługa błędu 404
         stat_code = "404";
-        std::string error_response = "HTTP/1.1 404 Not Found\r\n"
-                                    "Content-Length: 0\r\n"
-                                    "Connection: close\r\n\r\n";
+        std::string error_response = "HTTP/1.1 400 Bad request\r\n"
+                                    "Content-Type: text/html\r\n"
+                                    "Content-Length: " + std::to_string((_errorPage.getErrPage(404)).length()) +  "\r\n"
+                                    "\r\n\r\n" +
+                                    _errorPage.getErrPage(404);
         // std::cout << buffer << std::endl;
         // std::cout << error_response << std::endl;
         send(new_socket, error_response.c_str(), error_response.size(), 0);

@@ -1,5 +1,6 @@
 #include "../../header/server.hpp"
 #include "../../header/read_conf.hpp"
+#include "../../header/ErrorPage.hpp"
 
 Server::Server(int port) {
     server_fd = socket(AF_INET, SOCK_STREAM, 0);
@@ -82,7 +83,7 @@ void Server::handleConnection(int new_socket) {
     std::string request;
 
     request = save_request(new_socket);
-    std::cout << request << std::endl;
+    // std::cout << request << std::endl;
     if (stat_to_close == "1")
     {
         return ;
@@ -125,21 +126,22 @@ void Server::handleConnection(int new_socket) {
         }
         else 
         {
-            std::cout << PURPLE << "Response sent to client " << RESET << "[DELETE]" << std::endl;
+            std::cout << PURPLE << "Response sent to client " << RESET << "[DELETE]" << PURPLE << " with status code: " << RESET << stat_code << std::endl;
         }
     }
 
     else
     {
-        const char *http_response =
-            "HTTP/1.1 200 OK\r\n"
+        stat_code = "400";
+        std::string http_response =
+            "HTTP/1.1 400 Bad request\r\n"
             "Content-Type: text/html\r\n"
-            "Content-Length: 40\r\n"
-            "\n"
-            "<h1>Hello World :)</h1>";
-        std::cout << http_response << std::endl;
-        send(new_socket, http_response, strlen(http_response), 0);
-        std::cout << BLUE << "Response sent to client [Generic]" << RESET << std::endl;
+            "Content-Length: " + std::to_string((_errorPage.getErrPage(400)).length()) +
+            "\r\n\r\n" +
+            _errorPage.getErrPage(400);
+        // std::cout << http_response << std::endl;
+        send(new_socket, http_response.c_str(), http_response.length(), 0);
+        std::cout << BLUE << "Response sent to client" << RESET << " [GENERIC] " << PURPLE << "with status code: " << RESET << stat_code << std::endl;
     }
 
     epoll_ctl(epoll_fd, EPOLL_CTL_DEL, new_socket, NULL);
