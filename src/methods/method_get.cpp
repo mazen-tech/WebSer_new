@@ -1,5 +1,6 @@
 #include "../../header/read_conf.hpp"
 #include "../../header/server.hpp"
+#include "../../header/ErrorPage.hpp"
 
 int Server::met_get(char *buffer, int new_socket)
 {
@@ -81,7 +82,7 @@ int Server::met_get(char *buffer, int new_socket)
             waitpid(pid, nullptr, 0);
         }
     }
-    else if (find_file("./src", file_name, file_path))
+    else if (find_file("./src/cgi", file_name, file_path))
     {
         // Obsługa pliku statycznego
         std::ifstream file(file_path);
@@ -93,12 +94,14 @@ int Server::met_get(char *buffer, int new_socket)
 
             // Ustalanie typu MIME
             std::string content_type = "Content-Type: text/html\r\n";
+            
             if (file_name.find(".css") != std::string::npos)
                 content_type = "Content-Type: text/css\r\n";
             else if (file_name.find(".jpg") != std::string::npos)
                 content_type = "Content-Type: image/jpeg\r\n";
 
             // Wysyłanie odpowiedzi HTTP dla pliku statycznego
+            
             std::string http_response = "HTTP/1.1 200 OK\r\n" +
                                         content_type +
                                         "Content-Length: " + std::to_string(file_content.size()) + "\r\n"
@@ -112,7 +115,47 @@ int Server::met_get(char *buffer, int new_socket)
             std::string error_response = "HTTP/1.1 404 Not Found\r\n"
                                         "Content-Length: 0\r\n"
                                         "Connection: close\r\n\r\n";
-            std::cout << error_response << std::endl;
+            // std::cout << error_response << std::endl;
+            send(new_socket, error_response.c_str(), error_response.size(), 0);
+        }
+    }
+    else if (find_file("./src/uploads", file_name, file_path))
+    {
+        // Obsługa pliku statycznego
+        std::ifstream file(file_path);
+        if (file)
+        {
+            std::stringstream file_stream;
+            file_stream << file.rdbuf();
+            std::string file_content = file_stream.str();
+
+            // Ustalanie typu MIME
+            std::string content_type = "Content-Type: text/html\r\n";
+
+            content_type = "Content-Type: application/octet-stream";
+            
+            if (file_name.find(".css") != std::string::npos)
+                content_type = "Content-Type: text/css\r\n";
+            else if (file_name.find(".jpg") != std::string::npos)
+                content_type = "Content-Type: image/jpeg\r\n";
+
+            // Wysyłanie odpowiedzi HTTP dla pliku statycznego
+            
+            std::string http_response = "HTTP/1.1 200 OK\r\n" +
+                                        content_type +
+                                        "Content-Length: " + std::to_string(file_content.size()) + "\r\n"
+                                        "Content-Disposition: attachment; filename=" + file_name + "\r\n"
+                                        "Connection: close\r\n\r\n" + file_content;
+            send(new_socket, http_response.c_str(), http_response.size(), 0);
+        }
+        else
+        {
+            // Obsługa błędu 404
+            stat_code = "404";
+            std::string error_response = "HTTP/1.1 404 Not Found\r\n"
+                                        "Content-Length: 0\r\n"
+                                        "Connection: close\r\n\r\n";
+            // std::cout << error_response << std::endl;
             send(new_socket, error_response.c_str(), error_response.size(), 0);
         }
     }
@@ -123,7 +166,7 @@ int Server::met_get(char *buffer, int new_socket)
         std::string error_response = "HTTP/1.1 404 Not Found\r\n"
                                     "Content-Length: 0\r\n"
                                     "Connection: close\r\n\r\n";
-        std::cout << buffer << std::endl;
+        // std::cout << buffer << std::endl;
         // std::cout << error_response << std::endl;
         send(new_socket, error_response.c_str(), error_response.size(), 0);
     }

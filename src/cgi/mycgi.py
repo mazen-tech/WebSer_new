@@ -41,7 +41,7 @@ def get_files():
     result = ""
     files = os.listdir(f"{os.getcwd()}/src/uploads")
     for file in files:
-        result += f'<a href="get_file/{file}" download="{file}">{file}</a><br>'
+        result += f'<a href="{file}" download="{file}">{file}</a><br>'
     return result
 
 def insert_env(line):
