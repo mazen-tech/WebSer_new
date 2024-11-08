@@ -94,6 +94,7 @@ void Server::redarections(std::string &request)
             std::string secondElement = red[i].substr(firstSpacePos1 + 1, secondSpacePos - (firstSpacePos1 + 1));
             std::string thirdElement = red[i].substr(secondSpacePos + 1);
             request.replace(firstSpacePos + 1, request.find(' ', firstSpacePos + 1) - firstSpacePos - 1, thirdElement);
+            stat_code = secondElement;
             return ;
         }
         i ++;
@@ -110,7 +111,8 @@ void Server::handleConnection(int new_socket) {
     }
     stat_code = "200";
     redarections(request);
-    std::cout << request  << std::endl;
+    // std::cout << stat_code << std::endl;
+    // std::cout << request  << std::endl;
     if (request.find("POST /") != std::string::npos)
     {
         
