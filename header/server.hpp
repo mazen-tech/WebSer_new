@@ -16,6 +16,7 @@ public:
     struct epoll_event ev;
     struct epoll_event events[MAX_EVENTS];
     Read_conf *config;
+    std::vector <std::string> red;
 
 private:
     int server_fd;

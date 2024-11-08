@@ -36,13 +36,13 @@ private:
     std::string path; //document root path
     int port;
     size_t size;*/
-    ConfigParser config;
     std::string path; //document root path
     int port;
     size_t size;
     std::string cwd;
 
 public:
+    ConfigParser config;
     Read_conf();
     Read_conf(const std::string &configFile = "/home/bartosz/Projects/WebSer_new/configurations/config.conf");
     ~Read_conf();
