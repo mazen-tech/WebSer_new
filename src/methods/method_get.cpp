@@ -71,10 +71,10 @@ int Server::met_get(char *buffer, int new_socket)
                 std::string sta_code = std::string(strstr(buffer, "stat_cod: ") + 10).substr(0, 3);
 
                 // Wysyłanie odpowiedzi CGI do klienta
-                stat_code = sta_code;
                 std::string http_response;
-                if (stat_code != "200")
+                if (sta_code != "200")
                 {
+                    stat_code = sta_code;
                     http_response = "HTTP/1.1 " + sta_code + " Not found\r\n"
                                                 "Content-Type: text/html\r\n"
                                                 "Content-Length: " + std::to_string((_errorPage.getErrPage(std::stoi(sta_code))).length()) +
@@ -115,7 +115,7 @@ int Server::met_get(char *buffer, int new_socket)
 
             // Wysyłanie odpowiedzi HTTP dla pliku statycznego
             
-            std::string http_response = "HTTP/1.1 200 OK\r\n" +
+            std::string http_response = "HTTP/1.1 " + stat_code + " OK\r\n" +
                                         content_type +
                                         "Content-Length: " + std::to_string(file_content.size()) + "\r\n"
                                         "Connection: close\r\n\r\n" + file_content;
@@ -156,7 +156,7 @@ int Server::met_get(char *buffer, int new_socket)
 
             // Wysyłanie odpowiedzi HTTP dla pliku statycznego
             
-            std::string http_response = "HTTP/1.1 200 OK\r\n" +
+            std::string http_response = "HTTP/1.1 " + stat_code + " OK\r\n" +
                                         content_type +
                                         "Content-Length: " + std::to_string(file_content.size()) + "\r\n"
                                         "Content-Disposition: attachment; filename=" + file_name + "\r\n"

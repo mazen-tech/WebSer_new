@@ -120,9 +120,8 @@ int Server::met_post(char *buffer, int new_socket)
         // std::cout << buffer << std::endl;
         std::string sta_code = std::string(strstr(buffer, "stat_cod: ") + 10).substr(0, 3);
         // std::cout << sta_code << std::endl;
-        stat_code = sta_code;
         std::string http_response;
-        if (stat_code != "200")
+        if (sta_code != "200")
         {
             http_response = "HTTP/1.1 " + sta_code + " Not found\r\n"
                                         "Content-Type: text/html\r\n"
@@ -132,7 +131,8 @@ int Server::met_post(char *buffer, int new_socket)
         }
         else
         {
-            http_response = "HTTP/1.1 " + sta_code + " OK\r\n"
+            stat_code = sta_code;
+            http_response = "HTTP/1.1 " + stat_code + " OK\r\n"
                                         "Content-Type: text/html\r\n"
                                         "Content-Length: " + std::to_string(count) + "\r\n"
                                         "Connection: close\r\n\r\n" + std::string(buffer + 14);
