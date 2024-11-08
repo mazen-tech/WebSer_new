@@ -79,6 +79,27 @@ void Server::listenForConnections() {
     }
 }
 
+void Server::redarections(std::string &request)
+{
+    int i = 0;
+    while (i != red.size())
+    {
+        size_t firstSpacePos = request.find(' ');
+        std::string f = request.substr(firstSpacePos + 1, request.find(' ', firstSpacePos + 1) - firstSpacePos - 1);
+        std::string f1 = red[i].substr(0, red[i].find(' '));
+        if (f == f1)
+        {
+            size_t firstSpacePos1 = red[i].find(' ');
+            size_t secondSpacePos = red[i].find(' ', firstSpacePos1 + 1);
+            std::string secondElement = red[i].substr(firstSpacePos1 + 1, secondSpacePos - (firstSpacePos1 + 1));
+            std::string thirdElement = red[i].substr(secondSpacePos + 1);
+            request.replace(firstSpacePos + 1, request.find(' ', firstSpacePos + 1) - firstSpacePos - 1, thirdElement);
+            return ;
+        }
+        i ++;
+    }
+}
+
 void Server::handleConnection(int new_socket) {
     std::string request;
 
@@ -88,6 +109,8 @@ void Server::handleConnection(int new_socket) {
         return ;
     }
     stat_code = "200";
+    redarections(request);
+    std::cout << request  << std::endl;
     if (request.find("POST /") != std::string::npos)
     {
         
