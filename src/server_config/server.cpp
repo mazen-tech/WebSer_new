@@ -83,7 +83,6 @@ void Server::handleConnection(int new_socket) {
     std::string request;
 
     request = save_request(new_socket);
-    // std::cout << request << std::endl;
     if (stat_to_close == "1")
     {
         return ;
