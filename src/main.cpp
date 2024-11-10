@@ -28,7 +28,6 @@ int main() {
     
     // Check if port is valid (you can update the validation logic as needed)
     if (config.getPort() == 8080) {
-        // Create the Server instance using the loaded port
         Server server(config.getPort());
         server.config = &config;
         server.start();
