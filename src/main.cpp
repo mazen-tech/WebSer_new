@@ -26,7 +26,6 @@ int main() {
         return -1;
     }
     
-    // Check if port is valid (you can update the validation logic as needed)
     if (config.getPort() == 8080) {
         Server server(config.getPort());
         server.config = &config;
