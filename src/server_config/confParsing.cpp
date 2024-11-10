@@ -174,4 +174,18 @@ std::string ConfigParser::getPath() const {
 }
 
 
-
+void ConfigParser::save_redirections(std::vector<std::string>& newlist)
+{
+    std::map<std::string, std::map<std::string, std::string> >::const_iterator sectionIt;
+    for (sectionIt = config.begin(); sectionIt != config.end(); ++sectionIt)
+    {
+        std::map<std::string, std::string>::const_iterator kvIt;
+        for (kvIt = sectionIt->second.begin(); kvIt != sectionIt->second.end(); ++kvIt)
+        {
+            if (kvIt->first == "return")
+            {
+                newlist.push_back(sectionIt->first + " " + kvIt->second);
+            }
+        }
+    }
+}

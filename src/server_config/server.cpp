@@ -1,5 +1,6 @@
 #include "../../header/server.hpp"
 #include "../../header/read_conf.hpp"
+#include "../../header/ErrorPage.hpp"
 
 Server::Server(int port) {
     server_fd = socket(AF_INET, SOCK_STREAM, 0);
@@ -52,14 +53,15 @@ void Server::listenForConnections() {
     std::cout << GREEN << "Server is listening on port.... " << RESET << std::endl; 
 
     while (true) {
-        int nfds = epoll_wait(epoll_fd, events, MAX_EVENTS, -1);// bedzie czekac na zdarzenia oraz je monitor
+        int nfds = epoll_wait(epoll_fd, events, MAX_EVENTS, 100);// bedzie czekac na zdarzenia oraz je monitor
         for (int i = 0; i < nfds; i ++)
         {
             if (events[i].data.fd == server_fd) //oznacza to ze mamy nowe polaczenie przychodzace
             {
                 int addrlen = sizeof(address);
                 int new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t*)&addrlen);
-                if (new_socket < 0) {
+                if (new_socket < 0)
+                {
                     std::cerr << "Connection error\n";
                     continue;
                 }
@@ -77,6 +79,28 @@ void Server::listenForConnections() {
     }
 }
 
+void Server::redarections(std::string &request)
+{
+    int i = 0;
+    while (i != red.size())
+    {
+        size_t firstSpacePos = request.find(' ');
+        std::string f = request.substr(firstSpacePos + 1, request.find(' ', firstSpacePos + 1) - firstSpacePos - 1);
+        std::string f1 = red[i].substr(0, red[i].find(' '));
+        if (f == f1)
+        {
+            size_t firstSpacePos1 = red[i].find(' ');
+            size_t secondSpacePos = red[i].find(' ', firstSpacePos1 + 1);
+            std::string secondElement = red[i].substr(firstSpacePos1 + 1, secondSpacePos - (firstSpacePos1 + 1));
+            std::string thirdElement = red[i].substr(secondSpacePos + 1);
+            request.replace(firstSpacePos + 1, request.find(' ', firstSpacePos + 1) - firstSpacePos - 1, thirdElement);
+            stat_code = secondElement;
+            return ;
+        }
+        i ++;
+    }
+}
+
 void Server::handleConnection(int new_socket) {
     std::string request;
 
@@ -86,10 +110,13 @@ void Server::handleConnection(int new_socket) {
         return ;
     }
     stat_code = "200";
+    redarections(request);
+    // std::cout << stat_code << std::endl;
+    // std::cout << request  << std::endl;
     if (request.find("POST /") != std::string::npos)
     {
         
-        if (Server::met_post((char *)request.c_str(), new_socket))
+        if (met_post((char *)request.c_str(), new_socket))
         {
             std::cerr << "POST request handling failed\n";
             return;
@@ -99,9 +126,10 @@ void Server::handleConnection(int new_socket) {
             std::cout << RED << "Response sent to client " << RESET << new_socket << " " << "[POST]" << RED << " with status code: " << RESET << stat_code << std::endl;
         }
     }
+
     else if (request.find("GET /") != std::string::npos)
     {
-        if (Server::met_get((char *)request.c_str(), new_socket))
+        if (met_get((char *)request.c_str(), new_socket))
         {
             std::cerr << "GET request handling failed\n";
             return;
@@ -112,16 +140,32 @@ void Server::handleConnection(int new_socket) {
         }
 
     }
+
+    else if (request.find("DELETE /") != std::string::npos)
+    {
+        if (met_delete((char *)request.c_str(), new_socket))
+        {
+            std::cerr << "Delete request handling failed\n";
+            return;
+        }
+        else 
+        {
+            std::cout << PURPLE << "Response sent to client " << RESET << "[DELETE]" << PURPLE << " with status code: " << RESET << stat_code << std::endl;
+        }
+    }
+
     else
     {
-        const char *http_response =
-            "HTTP/1.1 200 OK\r\n"
+        stat_code = "400";
+        std::string http_response =
+            "HTTP/1.1 400 Bad request\r\n"
             "Content-Type: text/html\r\n"
-            "Content-Length: 40\r\n"
-            "\n"
-            "<h1>Hello World :)</h1>";
-        send(new_socket, http_response, strlen(http_response), 0);
-        std::cout << BLUE << "Response sent to client [Generic]" << RESET << std::endl;
+            "Content-Length: " + std::to_string((_errorPage.getErrPage(400)).length()) +
+            "\r\n\r\n" +
+            _errorPage.getErrPage(400);
+        // std::cout << http_response << std::endl;
+        send(new_socket, http_response.c_str(), http_response.length(), 0);
+        std::cout << BLUE << "Response sent to client" << RESET << " [GENERIC] " << PURPLE << "with status code: " << RESET << stat_code << std::endl;
     }
 
     epoll_ctl(epoll_fd, EPOLL_CTL_DEL, new_socket, NULL);

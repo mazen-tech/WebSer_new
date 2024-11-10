@@ -1,6 +1,7 @@
 #include "../header/read_conf.hpp"
 #include "../header/server.hpp"
-
+#include "iostream"
+#include "vector"
 /*int main() {
     // Load the configuration from the config file
     Read_conf config("/mnt/c/Users/miche/OneDrive/Desktop/WebSer_new/configurations/config.conf");
@@ -52,12 +53,16 @@ int main() {
         std::cerr << "Failed to load configuration." << std::endl;
         return -1;
     }
-    
+    // std::cout << config.config.config[0] << std::endl;
     // Check if port is valid (you can update the validation logic as needed)
     if (config.getPort() == 8080) {
         // Create the Server instance using the loaded port
         Server server(config.getPort());
         server.config = &config;
+        config.config.save_redirections(server.red);
+        // int i = 0;
+        // while (i != server.red.size())
+        //     std::cout << server.red[i ++] << std::endl;
         server.start();
     } else {
         std::cerr << "Configuration not loaded properly. Exiting...\n";
