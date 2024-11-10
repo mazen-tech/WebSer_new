@@ -16,7 +16,6 @@ int main() {
     Read_conf config(path.c_str());
     config.setCwd(buffer);
 
-    // Create the server instance after loading the configuration
     if (config.loadConfig(path.c_str())) {
         std::cout << "Loaded configuration successfully!" << std::endl;
         
