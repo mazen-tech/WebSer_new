@@ -80,8 +80,8 @@ void Server::listenForConnections() {
 
 void Server::handleConnection(int new_socket) {
     std::string request;
-
     request = save_request(new_socket);
+    
     std::cout << request << std::endl;
     if (stat_to_close == "1")
     {
@@ -98,7 +98,7 @@ void Server::handleConnection(int new_socket) {
         }
         else 
         {
-            std::cout << RED << "Response sent to client " << RESET << new_socket << " " << "[POST]" << RED << " with status code: " << RESET << stat_code << std::endl;
+            std::cout << CYAN << "Response sent to client " << RESET << new_socket << " " << "[POST]" << CYAN << " with status code: " << RESET << stat_code << std::endl;
         }
     }
 

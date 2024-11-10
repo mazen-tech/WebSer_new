@@ -11,7 +11,7 @@ SRCS = src/main.cpp \
 		src/server_config/server.cpp \
 		src/server_config/find_file.cpp \
 		src/server_config/confParsing.cpp \
-		src/errors/ErrorPage.cpp
+		src/error_pages/ErrorPage.cpp
 
 OBJDIR = obj
 OBJS = $(SRCS:src/%.cpp=$(OBJDIR)/%.o)

@@ -4,6 +4,7 @@
 #define YELLOW "\033[33m"
 #include <iostream>
 #include <netinet/in.h>
+#include <fcntl.h>  // for O_RDONLY
 #include "read_conf.hpp"
 #include "ErrorPage.hpp"
 
@@ -32,6 +33,7 @@ private:
     std::string save_request(int new_socket);
     std::string stat_code;
     std::string stat_to_close;
+
 };
 
-#endif // SERVER_HPP
+#endif
