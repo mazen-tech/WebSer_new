@@ -12,7 +12,6 @@ int main() {
     }
     std::string path = std::string(buffer) + std::string("/configurations/config.conf");
 
-    // Initialize Read_conf with the config file path
     Read_conf config(path.c_str());
     config.setCwd(buffer);
 
