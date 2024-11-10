@@ -1,7 +1,7 @@
 import os
 import sys
 from datetime import datetime, timedelta
-import re
+import time
 
 def parse_args(qs):
     if '?' not in qs:
@@ -92,12 +92,14 @@ try:
     if (sys.argv[2] != "GET"):
         parse_post_args(data)
     page = sys.argv[1].replace('.py', '.html')
-
     if page == 'bday_share.html':
         os.environ['shared_bd'] = find_party()
     access = True
     if "login" in page:
         access = check_login()
+    if "timeout" in page:
+        secs = int(os.getenv("seconds"))
+        time.sleep(secs)
     html_pages = os.listdir(f'{os.getcwd()}/src/cgi/html')
     css_pages = os.listdir(f'{os.getcwd()}/src/cgi/style')
 
