@@ -79,7 +79,7 @@ void Server::listenForConnections() {
     }
 }
 
-void Server::redarections(std::string &request)
+std::string Server::redarections(std::string &request)
 {
     int i = 0;
     while (i != red.size())
@@ -93,12 +93,16 @@ void Server::redarections(std::string &request)
             size_t secondSpacePos = red[i].find(' ', firstSpacePos1 + 1);
             std::string secondElement = red[i].substr(firstSpacePos1 + 1, secondSpacePos - (firstSpacePos1 + 1));
             std::string thirdElement = red[i].substr(secondSpacePos + 1);
-            request.replace(firstSpacePos + 1, request.find(' ', firstSpacePos + 1) - firstSpacePos - 1, thirdElement);
             stat_code = secondElement;
-            return ;
+            std::string red_response = "HTTP/1.1 " + secondElement + " See Other\r\n"
+            "Location: " + thirdElement + " \r\n"
+            "Content-Type: text/html; charset=UTF-8\r\n"
+            "Content-Length: 0";
+            return red_response;
         }
         i ++;
     }
+    return "";
 }
 
 void Server::handleConnection(int new_socket) {
@@ -110,10 +114,17 @@ void Server::handleConnection(int new_socket) {
         return ;
     }
     stat_code = "200";
-    redarections(request);
-    // std::cout << stat_code << std::endl;
-    // std::cout << request  << std::endl;
-    if (request.find("POST /") != std::string::npos)
+    std::string red_result = redarections(request);
+    if (red_result.length() > 0)
+    {
+        stat_code = "303";
+        if (red_result.find("302") != std::string::npos)
+            stat_code = "302";
+        std::string http_response = red_result;
+        send(new_socket, http_response.c_str(), http_response.length(), 0);
+        std::cout << GREEN << "Response sent to client" << RESET << " [REDIRECTION] " << PURPLE << "with status code: " << RESET << stat_code << std::endl;
+    }
+    else if (request.find("POST /") != std::string::npos)
     {
         
         if (met_post((char *)request.c_str(), new_socket))
