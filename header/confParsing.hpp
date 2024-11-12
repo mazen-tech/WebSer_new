@@ -31,7 +31,7 @@ public:
     // }
     void save_redirections(std::vector<std::string>& newlist);
 private:
-    std::map<std::string, std::map<std::string, std::string>> config;
+    std::map<std::string, std::map<std::string, std::string> > config;
     int port = 8080;           // Default port
     std::string path = "/default/path";  // Default path
     void parseDirective(const std::string& line, const std::string& context);

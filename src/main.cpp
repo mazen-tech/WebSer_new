@@ -58,8 +58,6 @@ int main() {
         ConfigParser test;
         std::cout << "Loaded configuration successfully!" << std::endl;
         std::cout << "Listening Port in main: " << config.getPort() << std::endl;
-        std::cout << "script python: " << test.getScriptPath() << std::endl;
-        std::cout << "lol: " << test.getPythonPath() << std::endl;
         std::cout << "Document Root: " << config.getDocumentRoot() << std::endl;
 
     } else {

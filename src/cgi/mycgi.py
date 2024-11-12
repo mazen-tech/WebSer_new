@@ -16,6 +16,9 @@ def parse_post_args(data):
     args = data.split('&')
     for a in args:
         a = a.split('=')
+        if a[0].strip() == "ammount":
+            if int(a[1]) <= 0:
+                return -1
         os.environ[a[0].strip()] = a[1]
 
 def find_party():
@@ -90,7 +93,9 @@ try:
     qs = os.getenv("QUERY_STRING", "")
     parse_args(qs)
     if (sys.argv[2] != "GET"):
-        parse_post_args(data)
+        if(parse_post_args(data) == -1):
+            pritn("error")
+            # raise ValueError("")
     page = sys.argv[1].replace('.py', '.html')
     if page == 'bday_share.html':
         os.environ['shared_bd'] = find_party()

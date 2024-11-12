@@ -1,7 +1,5 @@
 CC = c++
-CFLAGS = 
-# SRCS = src/main.cpp
-# SRCS = src/main_jp_test.cpp
+
 SRCS = src/main.cpp \
 		src/methods/method_get.cpp \
 		src/methods/method_post.cpp \
