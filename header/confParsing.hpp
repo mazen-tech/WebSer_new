@@ -5,6 +5,9 @@
 #include <map>
 #include <iostream>
 #include <vector>
+#include <set>
+
+void checkMultiplePortsDefined(const std::string& filename);
 
 class ConfigParser {
 public:
