@@ -1,5 +1,5 @@
 CC = c++
-CFLAGS = 
+CFLAGS = -g
 # SRCS = src/main.cpp
 # SRCS = src/main_jp_test.cpp
 SRCS = src/main.cpp \

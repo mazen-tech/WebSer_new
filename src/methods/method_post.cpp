@@ -96,6 +96,7 @@ int Server::met_post(char *buffer, int new_socket)
             NULL
         };
         execve(python_path, (char* const*)args, envp);
+        std::cout << "CGI CRASH\n"; 
         exit(EXIT_FAILURE);
     }
     else
@@ -113,8 +114,7 @@ int Server::met_post(char *buffer, int new_socket)
         if (count > 0)
         {
             buffer[count] = '\0';
-        }
-
+        
         // Zamknij potok po odczytaniu danych
         close(pipe_from_python[0]);
         // std::cout << buffer << std::endl;
@@ -154,6 +154,17 @@ int Server::met_post(char *buffer, int new_socket)
         //     "<h1>Wynik skryptu CGI</h1>";
         // send(new_socket, http_response, strlen(http_response), 0);
         // std::cout << "Odpowiedź CGI została wysłana do klienta\n";
+        }
+        else
+        {
+            stat_code = "500";
+            std::string http_response = "HTTP/1.1 " + stat_code + " Internal Server Error\r\n"
+                            "Content-Type: text/html\r\n"
+                            "Content-Length: " + std::to_string((_errorPage.getErrPage(std::stoi(stat_code))).length()) +
+                            "\r\n\r\n" +
+                            _errorPage.getErrPage(std::stoi(stat_code));   
+            send(new_socket, http_response.c_str(), http_response.size(), 0);
+        }
     }
 
     delete[] post_data;
