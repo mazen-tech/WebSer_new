@@ -221,7 +221,11 @@ void Server::listenForConnections() {
             else
             {
                 handleConnection(events[i].data.fd);
-                close(events[i].data.fd);
+                if (stat_to_close == "1")
+                {
+                    epoll_ctl(epoll_fd, EPOLL_CTL_DEL, events[i].data.fd, nullptr);
+                    close(events[i].data.fd);
+                }
             }
         }
 
