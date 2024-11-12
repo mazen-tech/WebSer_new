@@ -1,7 +1,7 @@
 #pragma once
 
 #include <string>
-#include <unordered_map>
+#include <map>
 
 class ErrorPage
 {
@@ -10,6 +10,6 @@ public:
     std::string getErrPage(int statusCode);
 
 private:
-    std::unordered_map<int, std::string> errorPages;
+    std::map<int, std::string> errorPages;
     void initErrMsg(); // load HTML templetes for error pages 
 };

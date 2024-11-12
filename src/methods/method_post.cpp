@@ -177,7 +177,7 @@ int Server::met_post(char *buffer, int new_socket)
     // Znalezienie Content-Length (długość danych POST)
     char *content_length_str = strstr(buffer, "Content-Length:");
     int content_length = 0;
-    if (content_length_str != nullptr)
+    if (content_length_str != NULL)
     {
         sscanf(content_length_str, "Content-Length: %d", &content_length);
     }
@@ -185,7 +185,7 @@ int Server::met_post(char *buffer, int new_socket)
     if (multi != NULL)
     {
         char *buf = strstr(multi + 1, "Content-Type: ");
-        char *con_disp = strstr(multi, "Content-Disposition: ");
+        // char *con_disp = strstr(multi, "Content-Disposition: ");
         char *file_name_start = strstr(multi, "filename=") + 10;
         int pos = std::string(file_name_start).find("\"");
         std::string file_name = std::string(file_name_start).substr(0, pos);
@@ -195,7 +195,7 @@ int Server::met_post(char *buffer, int new_socket)
             size_t pos_end = std::string(buf + pos_start + 4).find("------WebKitFormBoundary"); 
             std::string output = std::string(buf + pos_start + 4).substr(0, pos_end - 4);
             std::string file_location = std::string(config->getCwd()) + std::string("/src/uploads/");
-            std::ofstream file(file_location + file_name);
+            std::ofstream file((file_location + file_name).c_str());
             if (file.is_open()) {
                 file << output;
                 file.close();
@@ -249,7 +249,7 @@ int Server::met_post(char *buffer, int new_socket)
         close(pipe_fd[1]);
         // Proces rodzica
         // Oczekiwanie na zakończenie procesu CGI
-        waitpid(pid, nullptr, 0);
+        waitpid(pid, NULL, 0);
 
         char buffer[1024];
         ssize_t count = read(pipe_from_python[0], buffer, sizeof(buffer) - 1);
@@ -268,15 +268,15 @@ int Server::met_post(char *buffer, int new_socket)
             stat_code = sta_code;
             http_response = "HTTP/1.1 " + sta_code + " Not found\r\n"
                                         "Content-Type: text/html\r\n"
-                                        "Content-Length: " + std::to_string((_errorPage.getErrPage(std::stoi(sta_code))).length()) +
+                                        "Content-Length: " + to_string((_errorPage.getErrPage(stoii(sta_code))).length()) +
                                         "\r\n\r\n" +
-                                        _errorPage.getErrPage(std::stoi(sta_code));
+                                        _errorPage.getErrPage(stoii(sta_code));
         }
         else
         {
             http_response = "HTTP/1.1 " + stat_code + " OK\r\n"
                                         "Content-Type: text/html\r\n"
-                                        "Content-Length: " + std::to_string(count) + "\r\n"
+                                        "Content-Length: " + to_string(count) + "\r\n"
                                         "Connection: close\r\n\r\n" + std::string(buffer + 14);
         }
         // std::string http_response = "HTTP/1.1 200 OK\r\n"

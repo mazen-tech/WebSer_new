@@ -4,10 +4,10 @@
 bool find_file(const std::string& dir, const std::string& target, std::string& found_path)
 {
     DIR* dp = opendir(dir.c_str());
-    if (dp == nullptr) return false;
+    if (dp == NULL) return false;
 
     struct dirent* entry;
-    while ((entry = readdir(dp)) != nullptr) {
+    while ((entry = readdir(dp)) != NULL) {
         std::string path = dir + "/" + entry->d_name;
 
         if (entry->d_type == DT_DIR) {

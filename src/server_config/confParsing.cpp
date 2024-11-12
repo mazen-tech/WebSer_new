@@ -3,7 +3,7 @@
 #include <sstream>
 #include <regex>
 #include <iostream>
-
+#include <sstream>
 /*bool ConfigParser::parseConfigFile(const std::string& filepath) {
     std::ifstream file(filepath);
     if (!file.is_open()) {
@@ -64,7 +64,7 @@
 }*/
 
 void checkMultiplePortsDefined(const std::string& filename) {
-    std::ifstream file(filename);
+    std::ifstream file(filename.c_str());
     if (!file.is_open()) {
         std::cerr << "Error: Cannot open configuration file." << std::endl;
         return;
@@ -117,7 +117,9 @@ void checkMultiplePortsDefined(const std::string& filename) {
 }
 
 bool ConfigParser::parseConfigFile(const std::string& filepath) {
-    std::ifstream file(filepath);
+    port = 8080;
+    path = "/default/path";
+    std::ifstream file(filepath.c_str());
     if (!file.is_open()) {
         std::cerr << "Error opening file: " << filepath << std::endl;
         return false;

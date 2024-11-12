@@ -23,11 +23,27 @@
 #include <poll.h>
 #include <cstring>
 #include <sys/epoll.h>
+#include <cstdlib>
 #include "confParsing.hpp"
 
 std::string save_request(int new_socket);
 bool find_file(const std::string& dir, const std::string& target, std::string& found_path);
 
+template <typename T>
+std::string to_string(T value)
+{
+    std::ostringstream oss;
+    oss << value;
+    return oss.str();
+}
+
+int stoii(const std::string& str)
+{
+    std::istringstream iss(str);
+    int value;
+    iss >> value;
+    return value;
+}
 
 class Read_conf
 {

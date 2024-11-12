@@ -74,7 +74,7 @@ void Server::listenForConnections() {
                 handleConnection(events[i].data.fd);
                 if (stat_to_close == "1")
                 {
-                    epoll_ctl(epoll_fd, EPOLL_CTL_DEL, events[i].data.fd, nullptr);
+                    epoll_ctl(epoll_fd, EPOLL_CTL_DEL, events[i].data.fd, NULL);
                     close(events[i].data.fd);
                 }
             }
@@ -85,7 +85,7 @@ void Server::listenForConnections() {
 
 std::string Server::redarections(std::string &request)
 {
-    int i = 0;
+    unsigned long int i = 0;
     while (i != red.size())
     {
         size_t firstSpacePos = request.find(' ');
@@ -180,7 +180,7 @@ void Server::handleConnection(int new_socket) {
         std::string http_response =
             "HTTP/1.1 400 Bad request\r\n"
             "Content-Type: text/html\r\n"
-            "Content-Length: " + std::to_string((_errorPage.getErrPage(400)).length()) +
+            "Content-Length: " + to_string((_errorPage.getErrPage(400)).length()) +
             "\r\n\r\n" +
             _errorPage.getErrPage(400);
         // std::cout << http_response << std::endl;

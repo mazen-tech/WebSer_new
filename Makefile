@@ -1,4 +1,5 @@
 CC = c++
+CFLAGS = -ferror-limit=1000 -Wall -Wextra -Werror -std=c++98
 
 SRCS = src/main.cpp \
 		src/methods/method_get.cpp \

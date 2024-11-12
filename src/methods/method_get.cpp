@@ -77,28 +77,28 @@ int Server::met_get(char *buffer, int new_socket)
                     stat_code = sta_code;
                     http_response = "HTTP/1.1 " + sta_code + " Not found\r\n"
                                                 "Content-Type: text/html\r\n"
-                                                "Content-Length: " + std::to_string((_errorPage.getErrPage(std::stoi(sta_code))).length()) +
+                                                "Content-Length: " + to_string((_errorPage.getErrPage(stoii(sta_code))).length()) +
                                                 "\r\n\r\n" +
-                                                _errorPage.getErrPage(std::stoi(sta_code));
+                                                _errorPage.getErrPage(stoii(sta_code));
                 }
                 else
                 {
                     http_response = "HTTP/1.1 " + sta_code + " OK\r\n"
                                                 "Content-Type: text/html\r\n"
-                                                "Content-Length: " + std::to_string(bytesRead) + "\r\n"
+                                                "Content-Length: " + to_string(bytesRead) + "\r\n"
                                                 "Connection: close\r\n\r\n" + std::string(buffer + 14);
                 }
                 // std::cout << http_response << std::endl;
                 send(new_socket, http_response.c_str(), http_response.size(), 0);
             }
             close(pipefd[0]);
-            waitpid(pid, nullptr, 0);
+            waitpid(pid, NULL, 0);
         }
     }
     else if (find_file("./src/cgi", file_name, file_path))
     {
         // Obsługa pliku statycznego
-        std::ifstream file(file_path);
+        std::ifstream file(file_path.c_str());
         if (file)
         {
             std::stringstream file_stream;
@@ -117,7 +117,7 @@ int Server::met_get(char *buffer, int new_socket)
             
             std::string http_response = "HTTP/1.1 " + stat_code + " OK\r\n" +
                                         content_type +
-                                        "Content-Length: " + std::to_string(file_content.size()) + "\r\n"
+                                        "Content-Length: " + to_string(file_content.size()) + "\r\n"
                                         "Connection: close\r\n\r\n" + file_content;
             send(new_socket, http_response.c_str(), http_response.size(), 0);
         }
@@ -127,7 +127,7 @@ int Server::met_get(char *buffer, int new_socket)
             stat_code = "404";
             std::string error_response = "HTTP/1.1 400 Bad request\r\n"
                                         "Content-Type: text/html\r\n"
-                                        "Content-Length: " + std::to_string((_errorPage.getErrPage(404)).length()) +  "\r\n"
+                                        "Content-Length: " + to_string((_errorPage.getErrPage(404)).length()) +  "\r\n"
                                         "\r\n\r\n" +
                                         _errorPage.getErrPage(404);
             // std::cout << error_response << std::endl;
@@ -137,7 +137,7 @@ int Server::met_get(char *buffer, int new_socket)
     else if (find_file("./src/uploads", file_name, file_path))
     {
         // Obsługa pliku statycznego
-        std::ifstream file(file_path);
+        std::ifstream file(file_path.c_str());
         if (file)
         {
             std::stringstream file_stream;
@@ -158,7 +158,7 @@ int Server::met_get(char *buffer, int new_socket)
             
             std::string http_response = "HTTP/1.1 " + stat_code + " OK\r\n" +
                                         content_type +
-                                        "Content-Length: " + std::to_string(file_content.size()) + "\r\n"
+                                        "Content-Length: " + to_string(file_content.size()) + "\r\n"
                                         "Content-Disposition: attachment; filename=" + file_name + "\r\n"
                                         "Connection: close\r\n\r\n" + file_content;
             send(new_socket, http_response.c_str(), http_response.size(), 0);
@@ -169,7 +169,7 @@ int Server::met_get(char *buffer, int new_socket)
             stat_code = "404";
             std::string error_response = "HTTP/1.1 400 Bad request\r\n"
                                         "Content-Type: text/html\r\n"
-                                        "Content-Length: " + std::to_string((_errorPage.getErrPage(404)).length()) +  "\r\n"
+                                        "Content-Length: " + to_string((_errorPage.getErrPage(404)).length()) +  "\r\n"
                                         "\r\n\r\n" +
                                         _errorPage.getErrPage(404);
             // std::cout << error_response << std::endl;
@@ -182,7 +182,7 @@ int Server::met_get(char *buffer, int new_socket)
         stat_code = "404";
         std::string error_response = "HTTP/1.1 400 Bad request\r\n"
                                     "Content-Type: text/html\r\n"
-                                    "Content-Length: " + std::to_string((_errorPage.getErrPage(404)).length()) +  "\r\n"
+                                    "Content-Length: " + to_string((_errorPage.getErrPage(404)).length()) +  "\r\n"
                                     "\r\n\r\n" +
                                     _errorPage.getErrPage(404);
         // std::cout << buffer << std::endl;
