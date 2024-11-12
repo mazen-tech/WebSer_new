@@ -4,7 +4,6 @@
 #define YELLOW "\033[33m"
 #include <iostream>
 #include <netinet/in.h>
-#include <fcntl.h>  // for O_RDONLY
 #include "read_conf.hpp"
 #include "ErrorPage.hpp"
 
@@ -17,6 +16,9 @@ public:
     struct epoll_event ev;
     struct epoll_event events[MAX_EVENTS];
     Read_conf *config;
+    std::vector <std::string> red;
+    std::string redarections(std::string &request);
+
 
 private:
     int server_fd;
@@ -33,7 +35,6 @@ private:
     std::string save_request(int new_socket);
     std::string stat_code;
     std::string stat_to_close;
-
 };
 
-#endif
+#endif // SERVER_HPP

@@ -1,7 +1,7 @@
 import os
 import sys
 from datetime import datetime, timedelta
-import re
+import time
 
 def parse_args(qs):
     if '?' not in qs:
@@ -41,7 +41,8 @@ def get_files():
     result = ""
     files = os.listdir(f"{os.getcwd()}/src/uploads")
     for file in files:
-        result += f'<a href="get_file/{file}" download="{file}">{file}</a><br>'
+        if file != "m.png":
+            result += f'<a href="{file}" download="{file}">{file}</a><br>'
     return result
 
 def insert_env(line):
@@ -73,6 +74,14 @@ def count_size(page, dir):
             body += line
     return all, body
 
+def check_login():
+    un = os.getenv("username", "")
+    ps = os.getenv("password", "")
+    if un == "username" and ps == "Mazen123":
+        return True
+    else:
+        return False
+
 if (sys.argv[2] != "GET"):
     data = ""
     data = sys.stdin.read()  # Odczyt całej zawartości ze stdin
@@ -83,16 +92,23 @@ try:
     if (sys.argv[2] != "GET"):
         parse_post_args(data)
     page = sys.argv[1].replace('.py', '.html')
-
     if page == 'bday_share.html':
         os.environ['shared_bd'] = find_party()
+    access = True
+    if "login" in page:
+        access = check_login()
+    if "timeout" in page:
+        secs = int(os.getenv("seconds"))
+        time.sleep(secs)
     html_pages = os.listdir(f'{os.getcwd()}/src/cgi/html')
     css_pages = os.listdir(f'{os.getcwd()}/src/cgi/style')
 
-    if 'html' in page and page in html_pages:
+    if 'html' in page and page in html_pages and access:
         render(page, 'html')
     elif 'css' in page and page in css_pages:
         render(page, 'style')
+    elif not access:
+        print("stat_cod: 401")
     else:
         print("stat_cod: 404")
 except:

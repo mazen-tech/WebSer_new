@@ -4,7 +4,6 @@
 #define GREEN "\033[32m"
 #define RED "\033[31m"
 #define RESET "\033[0m"
-#define CYAN "\033[36m"
 #define PURPLE "\033[35m"
 #define BLUE "\033[34m"
 #define YELLOW "\033[33m"
@@ -37,13 +36,13 @@ private:
     std::string path; //document root path
     int port;
     size_t size;*/
-    ConfigParser config;
     std::string path; //document root path
     int port;
     size_t size;
     std::string cwd;
 
 public:
+    ConfigParser config;
     Read_conf();
     Read_conf(const std::string &configFile = "/home/bartosz/Projects/WebSer_new/configurations/config.conf");
     ~Read_conf();
