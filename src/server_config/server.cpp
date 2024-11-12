@@ -256,13 +256,18 @@ std::string Server::redarections(std::string &request)
 
 void Server::handleConnection(int new_socket) {
     std::string request;
+    struct timeval timeout;
+    timeout.tv_sec = 5;
+    timeout.tv_usec = 0;
+    setsockopt(new_socket, SOL_SOCKET, SO_SNDTIMEO, &timeout, sizeof(timeout));
+    setsockopt(new_socket, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout));
 
+    stat_code = "200";
     request = save_request(new_socket);
     if (stat_to_close == "1")
     {
         return ;
     }
-    stat_code = "200";
     std::string red_result = redarections(request);
     if (red_result.length() > 0)
     {
