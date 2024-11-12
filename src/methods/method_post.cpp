@@ -123,6 +123,7 @@ int Server::met_post(char *buffer, int new_socket)
         std::string http_response;
         if (sta_code != "200")
         {
+            stat_code = sta_code;
             http_response = "HTTP/1.1 " + sta_code + " Not found\r\n"
                                         "Content-Type: text/html\r\n"
                                         "Content-Length: " + std::to_string((_errorPage.getErrPage(std::stoi(sta_code))).length()) +
@@ -131,7 +132,6 @@ int Server::met_post(char *buffer, int new_socket)
         }
         else
         {
-            stat_code = sta_code;
             http_response = "HTTP/1.1 " + stat_code + " OK\r\n"
                                         "Content-Type: text/html\r\n"
                                         "Content-Length: " + std::to_string(count) + "\r\n"
@@ -144,7 +144,6 @@ int Server::met_post(char *buffer, int new_socket)
         // std::cout << http_response << std::endl;
         // stat_code = sta_code;
         send(new_socket, http_response.c_str(), http_response.size(), 0);
-
         // Zwracanie odpowiedzi HTTP (np. wyniku skryptu CGI)
         // const char *http_response =
         //     "HTTP/1.1 200 OK\r\n"
@@ -154,17 +153,7 @@ int Server::met_post(char *buffer, int new_socket)
         //     "<h1>Wynik skryptu CGI</h1>";
         // send(new_socket, http_response, strlen(http_response), 0);
         // std::cout << "Odpowiedź CGI została wysłana do klienta\n";
-        }
-        else
-        {
-            stat_code = "500";
-            std::string http_response = "HTTP/1.1 " + stat_code + " Internal Server Error\r\n"
-                            "Content-Type: text/html\r\n"
-                            "Content-Length: " + std::to_string((_errorPage.getErrPage(std::stoi(stat_code))).length()) +
-                            "\r\n\r\n" +
-                            _errorPage.getErrPage(std::stoi(stat_code));   
-            send(new_socket, http_response.c_str(), http_response.size(), 0);
-        }
+    }
     }
 
     delete[] post_data;
