@@ -26,9 +26,6 @@
 #include <cstdlib>
 #include "confParsing.hpp"
 
-std::string save_request(int new_socket);
-bool find_file(const std::string& dir, const std::string& target, std::string& found_path);
-
 template <typename T>
 std::string to_string(T value)
 {
@@ -37,13 +34,9 @@ std::string to_string(T value)
     return oss.str();
 }
 
-int stoii(const std::string& str)
-{
-    std::istringstream iss(str);
-    int value;
-    iss >> value;
-    return value;
-}
+int stoiii(const std::string& str);
+std::string save_request(int new_socket);
+bool find_file(const std::string& dir, const std::string& target, std::string& found_path);
 
 class Read_conf
 {

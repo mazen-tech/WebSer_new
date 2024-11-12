@@ -8,6 +8,7 @@
 #include <set>
 
 void checkMultiplePortsDefined(const std::string& filename);
+int parseClientMaxBodySize(const std::string& filename);
 
 class ConfigParser {
 public:

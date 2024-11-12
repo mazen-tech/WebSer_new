@@ -15,6 +15,14 @@ int ft_stoi(std::string str)
     return (extraction);
 }
 
+int stoiii(const std::string& str)
+{
+    std::istringstream iss(str);
+    int value;
+    iss >> value;
+    return value;
+}
+
 //in progress
 /*
 std::string errorCodeStatus(short SC)

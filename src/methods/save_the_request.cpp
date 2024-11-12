@@ -1,5 +1,6 @@
 #include "../../header/read_conf.hpp"
 #include "../../header/server.hpp"
+#include "../../header/confParsing.hpp"
 
 std::string Server::save_request(int new_socket)
 {
@@ -8,7 +9,7 @@ std::string Server::save_request(int new_socket)
     std::string request;
     ssize_t bytes = 0;
     int round = 0;
-    ssize_t max_by = 2048;// that should be taken from parsing;
+    ssize_t max_by = parseClientMaxBodySize("/nfs/homes/bkotwica/WebSer_new/configurations/config.conf");
 
     while (true)
     {
@@ -29,12 +30,12 @@ std::string Server::save_request(int new_socket)
     }
     if (request.find("GET /") != std::string::npos && bytes > 1024)
     {
-        stat_code = "418";// poprawic i napisac response
+        stat_code = "413";
         return "";
     }
     if (bytes > max_by)
     {
-        stat_code = "418";// poprawic i napisac response
+        stat_code = "413";
         return "";
     }
 

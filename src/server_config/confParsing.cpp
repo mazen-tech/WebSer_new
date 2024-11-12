@@ -1,67 +1,43 @@
 #include "../../header/confParsing.hpp"
 #include <fstream>
 #include <sstream>
-#include <regex>
 #include <iostream>
-#include <sstream>
-/*bool ConfigParser::parseConfigFile(const std::string& filepath) {
-    std::ifstream file(filepath);
-    if (!file.is_open()) {
-        std::cerr << "Error opening file: " << filepath << std::endl;
-        return false;
+#include <algorithm>
+#include <set>
+
+int parseClientMaxBodySize(const std::string& filename) {
+    std::ifstream confFile(filename.c_str());
+    if (!confFile.is_open()) {
+    throw std::runtime_error("Error: Unable to open configuration file.");
     }
 
     std::string line;
-    std::string currentLocation;
-    bool portDefined = false;
+    int clientMaxBodySize = -1;
 
-    while (std::getline(file, line)) {
-        trim(line);
-
-        // Skip comments and empty lines
-        if (line.empty() || line[0] == '#') continue;
-
-        // Check for server block
-        if (line.find("server {") != std::string::npos) {
-            currentLocation.clear();
-            continue;
-        }
-
-        // Check for location block
-        std::smatch match;
-        if (std::regex_search(line, match, std::regex(R"(location\s+(\S+)\s*\{)"))) {
-            currentLocation = match[1];
-            continue;
-        }
-
-        // Parse configuration directives
-        if (!currentLocation.empty()) {
-            parseDirective(line, currentLocation);
-        } else {
-            parseDirective(line, "global");
-        }
-    }
-
-    if (line.find("listen") != std::string::npos) {
-            if (portDefined) {
-                std::cerr << "Error: Port is defined multiple times!" << std::endl;
-                return false;  // Return false to indicate an error
+    while (std::getline(confFile, line)) {
+        std::istringstream iss(line);
+        std::string key;
+        
+        if (line.find("client_max_body_size") != std::string::npos) {
+            iss >> key;
+            if (key == "client_max_body_size") {
+                int value;
+                iss >> value;
+                clientMaxBodySize = value;
+                break;
             }
-            portDefined = true;  // Mark port as defined
         }
-
-    file.close();
-
-    // Extract needed data (port and path)
-    if (config["global"].count("listen") > 0) {
-        port = std::stoi(config["global"]["listen"]);
-    }
-    if (config["global"].count("root") > 0) {
-        path = config["global"]["root"];
     }
 
-    return true;
-}*/
+    confFile.close();
+
+    if (clientMaxBodySize == -1) {
+        throw std::runtime_error("Error: client_max_body_size not defined in the configuration file.");
+    }
+
+    return clientMaxBodySize;
+}   
+
 
 void checkMultiplePortsDefined(const std::string& filename) {
     std::ifstream file(filename.c_str());
@@ -142,10 +118,14 @@ bool ConfigParser::parseConfigFile(const std::string& filepath) {
         }
 
         // Check for location block
-        std::smatch match;
-        if (std::regex_search(line, match, std::regex(R"(location\s+(\S+)\s*\{)"))) {
-            currentLocation = match[1];
-            continue;
+        size_t locationPos = line.find("location");
+        if (locationPos != std::string::npos) {
+            size_t start = line.find_first_not_of(" \t", locationPos + 8);
+            size_t end = line.find_first_of(" \t{", start);
+            if (start != std::string::npos && end != std::string::npos) {
+                currentLocation = line.substr(start, end - start);
+                continue;
+            }
         }
 
         // Parse configuration directives
@@ -157,9 +137,9 @@ bool ConfigParser::parseConfigFile(const std::string& filepath) {
 
         // Check for listen directive and multiple port definitions
         if (line.find("listen") != std::string::npos) {
-            std::smatch portMatch;
-            std::regex portRegex(R"(\blisten\s+(\d+)(?:\s+\d+)*;)"); // Regex to match multiple ports in a single listen statement
-            if (std::regex_search(line, portMatch, portRegex)) {
+            size_t start = line.find_first_not_of(" \t", line.find("listen") + 6);
+            size_t end = line.find_first_of(" \t;", start);
+            if (start != std::string::npos && end != std::string::npos) {
                 if (portDefined) {
                     std::cerr << "Error: Port is defined multiple times!" << std::endl;
                     return false;  // Return false to indicate an error
@@ -173,7 +153,7 @@ bool ConfigParser::parseConfigFile(const std::string& filepath) {
 
     // Extract needed data (port and path)
     if (config["global"].count("listen") > 0) {
-        port = std::stoi(config["global"]["listen"]);
+        port = std::atoi(config["global"]["listen"].c_str());
     }
     if (config["global"].count("root") > 0) {
         path = config["global"]["root"];
@@ -182,23 +162,27 @@ bool ConfigParser::parseConfigFile(const std::string& filepath) {
     return true;
 }
 
-
 void ConfigParser::parseDirective(const std::string& line, const std::string& context) {
-    std::smatch match;
-    if (std::regex_search(line, match, std::regex(R"(\s*(\S+)\s+(.+);)"))) {
-        std::string key = match[1];
-        std::string value = match[2];
-        config[context][key] = value;
+    size_t start = line.find_first_not_of(" \t");
+    size_t end = line.find_first_of(" \t", start);
+    if (start != std::string::npos && end != std::string::npos) {
+        std::string key = line.substr(start, end - start);
+        start = line.find_first_not_of(" \t", end);
+        end = line.find_first_of(";", start);
+        if (start != std::string::npos && end != std::string::npos) {
+            std::string value = line.substr(start, end - start);
+            config[context][key] = value;
+        }
     }
 }
 
+bool isNotSpace(unsigned char ch) {
+    return !std::isspace(ch);
+}
+
 void ConfigParser::trim(std::string& str) {
-    str.erase(str.begin(), std::find_if(str.begin(), str.end(), [](unsigned char ch) {
-        return !std::isspace(ch);
-    }));
-    str.erase(std::find_if(str.rbegin(), str.rend(), [](unsigned char ch) {
-        return !std::isspace(ch);
-    }).base(), str.end());
+    str.erase(str.begin(), std::find_if(str.begin(), str.end(), isNotSpace));
+    str.erase(std::find_if(str.rbegin(), str.rend(), isNotSpace).base(), str.end());
 }
 
 int ConfigParser::getPort() const {
@@ -209,17 +193,12 @@ std::string ConfigParser::getPath() const {
     return path;
 }
 
-
-void ConfigParser::save_redirections(std::vector<std::string>& newlist)
-{
+void ConfigParser::save_redirections(std::vector<std::string>& newlist) {
     std::map<std::string, std::map<std::string, std::string> >::const_iterator sectionIt;
-    for (sectionIt = config.begin(); sectionIt != config.end(); ++sectionIt)
-    {
+    for (sectionIt = config.begin(); sectionIt != config.end(); ++sectionIt) {
         std::map<std::string, std::string>::const_iterator kvIt;
-        for (kvIt = sectionIt->second.begin(); kvIt != sectionIt->second.end(); ++kvIt)
-        {
-            if (kvIt->first == "return")
-            {
+        for (kvIt = sectionIt->second.begin(); kvIt != sectionIt->second.end(); ++kvIt) {
+            if (kvIt->first == "return") {
                 newlist.push_back(sectionIt->first + " " + kvIt->second);
             }
         }
@@ -235,7 +214,6 @@ const char* ConfigParser::getPythonPath() const {
     }
     return path;
 }
-
 
 const char* ConfigParser::getScriptPath() const {
     ConfigParser configParser;

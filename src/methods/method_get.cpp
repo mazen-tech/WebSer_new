@@ -77,9 +77,9 @@ int Server::met_get(char *buffer, int new_socket)
                     stat_code = sta_code;
                     http_response = "HTTP/1.1 " + sta_code + " Not found\r\n"
                                                 "Content-Type: text/html\r\n"
-                                                "Content-Length: " + to_string((_errorPage.getErrPage(stoii(sta_code))).length()) +
+                                                "Content-Length: " + to_string((_errorPage.getErrPage(stoiii(sta_code))).length()) +
                                                 "\r\n\r\n" +
-                                                _errorPage.getErrPage(stoii(sta_code));
+                                                _errorPage.getErrPage(stoiii(sta_code));
                 }
                 else
                 {

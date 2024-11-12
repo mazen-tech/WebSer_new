@@ -176,13 +176,14 @@ void Server::handleConnection(int new_socket) {
 
     else
     {
-        stat_code = "400";
+        if (stat_code == "200")
+            stat_code = "400";
         std::string http_response =
-            "HTTP/1.1 400 Bad request\r\n"
+            "HTTP/1.1 " + stat_code + " Bad request\r\n"
             "Content-Type: text/html\r\n"
-            "Content-Length: " + to_string((_errorPage.getErrPage(400)).length()) +
+            "Content-Length: " + to_string((_errorPage.getErrPage(stoiii(stat_code))).length()) +
             "\r\n\r\n" +
-            _errorPage.getErrPage(400);
+            _errorPage.getErrPage(stoiii(stat_code));
         // std::cout << http_response << std::endl;
         send(new_socket, http_response.c_str(), http_response.length(), 0);
         std::cout << BLUE << "Response sent to client" << RESET << " [GENERIC] " << PURPLE << "with status code: " << RESET << stat_code << std::endl;
