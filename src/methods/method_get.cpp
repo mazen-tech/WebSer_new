@@ -1,8 +1,16 @@
 #include "../../header/read_conf.hpp"
 #include "../../header/server.hpp"
+#include "../../header/confParsing.hpp"
 
 int Server::met_get(char *buffer, int new_socket)
 {
+    ConfigParser configParser;
+    const char *python_path = configParser.getPythonPath();
+    const char *script_path = configParser.getScriptPath();
+    
+    //const char *python_path = "/usr/bin/python3";
+    //const char *script_path = "./src/cgi/mycgi.py";
+
     char* query_string = strstr(buffer, "GET /") + 5;
     char* end_of_uri = strchr(query_string, ' ');
     *end_of_uri = '\0';
@@ -33,15 +41,12 @@ int Server::met_get(char *buffer, int new_socket)
         }
 
         pid_t pid = fork();
-        if (pid == 0) {
-            // Proces potomny (skrypt CGI)
+        if (pid == 0) 
+        {
             close(pipefd[0]);  // Zamykamy odczytanie w dziecku
             dup2(pipefd[1], STDOUT_FILENO);  // Przekierowanie `stdout` na zapis potoku
             close(pipefd[1]);
-        // std::cout << "j ";
-            // Ustawianie zmiennej QUERY_STRING dla skryptu CGI
-        const char *python_path = "/usr/bin/python3";
-        const char *script_path = "./src/cgi/mycgi.py";
+        
         const char *page = file_name.c_str();
         const char *method = "GET";
         // PASS REQUESTED PAGE (eg. index.html) AS ARG
@@ -59,9 +64,7 @@ int Server::met_get(char *buffer, int new_socket)
         }
         else
         {
-            // Proces rodzica (odczytanie wyników z potoku)
-            close(pipefd[1]);  // Zamykamy zapis w rodzicu
-
+            close(pipefd[1]);
             char buffer[100000];
             ssize_t bytesRead = read(pipefd[0], buffer, sizeof(buffer) - 1);
             if (bytesRead > 0)

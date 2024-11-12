@@ -22,8 +22,18 @@ int Server::met_post(char *buffer, int new_socket)
 {
     int pipe_fd[2];
     int pipe_from_python[2];
-
     std::string filename = f_name(buffer);
+
+    ConfigParser configParser;/*
+    if (!configParser.parseConfigFile("/mnt/c/Users/miche/OneDrive/Desktop/ff/test/WebSer_new/configurations/config.conf")) {
+        std::cerr << "Failed to load configuration file" << std::endl;
+        return 1;
+    }*/
+
+    const char *python_path = configParser.getPythonPath();
+    const char *script_path = configParser.getScriptPath();
+    //const char *python_path = "/usr/bin/python3";
+    //const char *script_path = "./src/cgi/mycgi.py";
 
     if (pipe(pipe_fd) == -1 || pipe(pipe_from_python) == -1)
     {
@@ -79,9 +89,6 @@ int Server::met_post(char *buffer, int new_socket)
         // Przekazywanie danych POST przez standardowe wejście (stdin)
         // dup2(STDOUT_FILENO, STDIN_FILENO);
         // std::cout << line << EOF << std::endl;
-
-        const char *python_path = "/usr/bin/python3";
-        const char *script_path = "./src/cgi/mycgi.py";
         const char *filename_cstr = filename.c_str();
         const char *method = "POST";
         // const char *page = file_name.c_str();
@@ -104,8 +111,6 @@ int Server::met_post(char *buffer, int new_socket)
         close(pipe_from_python[1]);
         write(pipe_fd[1], line.c_str(), line.size());
         close(pipe_fd[1]);
-        // Proces rodzica
-        // Oczekiwanie na zakończenie procesu CGI
         waitpid(pid, nullptr, 0);
 
         char buffer[1024];
@@ -119,25 +124,12 @@ int Server::met_post(char *buffer, int new_socket)
         close(pipe_from_python[0]);
         // std::cout << buffer << std::endl;
         std::string sta_code = std::string(strstr(buffer, "stat_cod: ") + 10).substr(0, 3);
-        // std::cout << sta_code << std::endl;
-        // std::cout << count << std::endl;
         std::string http_response = "HTTP/1.1 200 OK\r\n"
         "Content-Type: text/html\r\n"
         "Content-Length: " + std::to_string(count) + "\r\n"
         "Connection: close\r\n\r\n" + std::string(buffer + 14);
-        // std::cout << http_response << std::endl;
         stat_code = sta_code;
         send(new_socket, http_response.c_str(), http_response.size(), 0);
-
-        // Zwracanie odpowiedzi HTTP (np. wyniku skryptu CGI)
-        // const char *http_response =
-        //     "HTTP/1.1 200 OK\r\n"
-        //     "Content-Type: text/html\r\n"
-        //     "Content-Length: 400\r\n"
-        //     "\n"
-        //     "<h1>Wynik skryptu CGI</h1>";
-        // send(new_socket, http_response, strlen(http_response), 0);
-        // std::cout << "Odpowiedź CGI została wysłana do klienta\n";
     }
 
     delete[] post_data;

@@ -1,5 +1,6 @@
 #include "../header/read_conf.hpp"
 #include "../header/server.hpp"
+#include "../header/confParsing.hpp"
 
 /*int main() {
 
@@ -54,8 +55,11 @@ int main() {
     config.setCwd(buffer);
     if (config.loadConfig(path.c_str())) 
     {
+        ConfigParser test;
         std::cout << "Loaded configuration successfully!" << std::endl;
         std::cout << "Listening Port in main: " << config.getPort() << std::endl;
+        std::cout << "script python: " << test.getScriptPath() << std::endl;
+        std::cout << "lol: " << test.getPythonPath() << std::endl;
         std::cout << "Document Root: " << config.getDocumentRoot() << std::endl;
 
     } else {
