@@ -168,6 +168,8 @@ int Server::met_post(char *buffer, int new_socket)
 
     const char *python_path = configParser.getPythonPath();
     const char *script_path = configParser.getScriptPath();
+    if (python_path == NULL || script_path == NULL)
+        return 1;
     if (pipe(pipe_fd) == -1 || pipe(pipe_from_python) == -1)
     {
         std::cerr << "Pipe failed" << std::endl;

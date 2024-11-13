@@ -208,7 +208,7 @@ void ConfigParser::save_redirections(std::vector<std::string>& newlist) {
 const char* ConfigParser::getPythonPath() const {
     ConfigParser configParser;
     const char *path = "/usr/bin/python3";
-    if (!configParser.parseConfigFile("/mnt/c/Users/miche/OneDrive/Desktop/ff/test/WebSer_new/configurations/config.conf")) {
+    if (!configParser.parseConfigFile("/nfs/homes/bkotwica/WebSer_new/configurations/config.conf")) {
         std::cerr << "Failed to load configuration file" << std::endl;
         return NULL;
     }
@@ -218,7 +218,7 @@ const char* ConfigParser::getPythonPath() const {
 const char* ConfigParser::getScriptPath() const {
     ConfigParser configParser;
     const char *path = "./src/cgi/mycgi.py";
-    if (!configParser.parseConfigFile("/mnt/c/Users/miche/OneDrive/Desktop/ff/test/WebSer_new/configurations/config.conf")) {
+    if (!configParser.parseConfigFile("/nfs/homes/bkotwica/WebSer_new/configurations/config.conf")) {
         std::cerr << "Failed to load configuration file" << std::endl;
         return NULL;
     }
