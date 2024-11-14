@@ -22,7 +22,6 @@ int Server::met_get(char *buffer, int new_socket)
         if (file_name.length() == 0)
             file_name = "index.html";
     }
-
     std::string file_path;
     if (file_name.find(".py") != std::string::npos)
     {
@@ -88,7 +87,6 @@ int Server::met_get(char *buffer, int new_socket)
                                                 "Content-Length: " + to_string(bytesRead) + "\r\n"
                                                 "Connection: close\r\n\r\n" + std::string(buffer + 14);
                 }
-                // std::cout << http_response << std::endl;
                 send(new_socket, http_response.c_str(), http_response.size(), 0);
             }
             close(pipefd[0]);
@@ -185,8 +183,6 @@ int Server::met_get(char *buffer, int new_socket)
                                     "Content-Length: " + to_string((_errorPage.getErrPage(404)).length()) +  "\r\n"
                                     "\r\n\r\n" +
                                     _errorPage.getErrPage(404);
-        // std::cout << buffer << std::endl;
-        // std::cout << error_response << std::endl;
         send(new_socket, error_response.c_str(), error_response.size(), 0);
     }
     return (0);
