@@ -3,7 +3,6 @@
 
 
 int Server::met_delete(char *buffer, int new_socket) {
-    // Adjust the pointer to capture the correct URI
     char *query_string = strstr(buffer, "DELETE /") + 7;
     char *end_of_uri = strchr(query_string, ' ');
     *end_of_uri = '\0';
@@ -12,7 +11,6 @@ int Server::met_delete(char *buffer, int new_socket) {
     std::string file_name = full_uri.empty() ? "index.html" : full_uri;
     std::string file_path = "./src" + file_name;
 
-    // Debugging output to check path
     std::cout << "Attempting to delete file: " << file_path << std::endl;
 
     if (remove(file_path.c_str()) == 0) {
