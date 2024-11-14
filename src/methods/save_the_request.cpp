@@ -37,6 +37,5 @@ std::string Server::save_request(int new_socket)
         stat_code = "413";
         return "";
     }
-
     return (request);
 }
