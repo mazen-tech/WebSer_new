@@ -47,7 +47,6 @@ int Server::met_post(char *buffer, int new_socket)
     if (multi != NULL)
     {
         char *buf = strstr(multi + 1, "Content-Type: ");
-        // char *con_disp = strstr(multi, "Content-Disposition: ");
         char *file_name_start = strstr(multi, "filename=") + 10;
         int pos = std::string(file_name_start).find("\"");
         std::string file_name = std::string(file_name_start).substr(0, pos);
@@ -71,7 +70,6 @@ int Server::met_post(char *buffer, int new_socket)
     std::string line = strstr(buffer, "\r\n\r\n");
     // // Utworzenie procesu potomnego dla skryptu CGI
     pid_t pid = fork();
-    // std::cout << buffer << std::endl;
     if (pid == 0)
     {  // Proces potomny
         close(pipe_fd[1]);
@@ -81,18 +79,11 @@ int Server::met_post(char *buffer, int new_socket)
         dup2(pipe_from_python[1], STDOUT_FILENO);
         close(pipe_fd[0]);
         close(pipe_from_python[1]);
-        // Przekazywanie danych POST przez standardowe wejście (stdin)
-        // dup2(STDOUT_FILENO, STDIN_FILENO);
-        // std::cout << line << EOF << std::endl;
 
     
         const char *filename_cstr = filename.c_str();
         const char *method = "POST";
-        // const char *page = file_name.c_str();
-        // PASS REQUESTED PAGE (eg. index.html) AS ARG
         const char *args[] = {python_path, script_path, filename_cstr, method, NULL};
-        // std::string qs = "QUERY_STRING=" + (std::string)query_string;
-        // std::cout << qs << std::endl;
         char *envp[] = {
             (char *)"REQUEST_METHOD=GET",
             (char *)"CONTENT_TYPE=text/html",
