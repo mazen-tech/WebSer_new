@@ -1,7 +1,6 @@
 #ifndef SERVER_HPP
 #define SERVER_HPP
 
-#define YELLOW "\033[33m"
 #include <iostream>
 #include <netinet/in.h>
 #include "read_conf.hpp"
@@ -37,4 +36,4 @@ private:
     std::string stat_to_close;
 };
 
-#endif // SERVER_HPP
+#endif
