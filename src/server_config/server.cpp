@@ -1,3 +1,14 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   server.cpp                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: maabdela <maabdela@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/11/01 23:45:05 by maabdela          #+#    #+#             */
+/*   Updated: 2024/11/13 16:56:05 by maabdela         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 #include "../../header/server.hpp"
 #include "../../header/read_conf.hpp"
 #include "../../header/ErrorPage.hpp"
@@ -42,7 +53,7 @@ void Server::listenForConnections() {
         exit(EXIT_FAILURE);
     }
 
-    epoll_fd = epoll_create1(EPOLL_CLOEXEC); // flaga zamykajaca automatycznie deskryptor
+    epoll_fd = epoll_create1(EPOLL_CLOEXEC);
     ev.events = EPOLLIN | EPOLLOUT; // okresla jakie typy eventow ma monitorowac
     // w naszym przypadku odczyt i zapis
     ev.data.fd = server_fd;
