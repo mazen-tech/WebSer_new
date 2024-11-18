@@ -1,3 +1,4 @@
+
 #include "../../header/read_conf.hpp"
 #include "../../header/server.hpp"
 #include "../../header/ErrorPage.hpp"
@@ -180,7 +181,6 @@ int Server::met_get(char *buffer, int new_socket)
         stat_code = "404";
         std::ifstream file("src/cgi/html/404.html");
         std::stringstream file_stream;
-        std::cout << file.is_open() << std::endl;
         file_stream << file.rdbuf();
         std::string file_content = file_stream.str();
         std::string content_type = "Content-Type: text/html\r\n";
