@@ -18,9 +18,9 @@
 
 int parseClientMaxBodySize(const std::string& filename) {
     std::ifstream confFile(filename.c_str());
-    /*if (!confFile.is_open()) {
+    if (!confFile.is_open()) {
     throw std::runtime_error("Error: Unable to open configuration file.");
-    }*/
+    }
 
     std::string line;
     int clientMaxBodySize = -1;
@@ -219,7 +219,7 @@ void ConfigParser::save_redirections(std::vector<std::string>& newlist) {
 const char* ConfigParser::getPythonPath() const {
     ConfigParser configParser;
     const char *path = "/usr/bin/python3";
-    if (!configParser.parseConfigFile("/mnt/c/Users/miche/OneDrive/Desktop/WebSer_new/configurations/config.conf")) {
+    if (!configParser.parseConfigFile("/nfs/homes/bkotwica/WebSer_new/configurations/config.conf")) {
         std::cerr << "Failed to load configuration file" << std::endl;
         return NULL;
     }
@@ -229,7 +229,7 @@ const char* ConfigParser::getPythonPath() const {
 const char* ConfigParser::getScriptPath() const {
     ConfigParser configParser;
     const char *path = "./src/cgi/mycgi.py";
-    if (!configParser.parseConfigFile("/mnt/c/Users/miche/OneDrive/Desktop/WebSer_new/configurations/config.conf")) {
+    if (!configParser.parseConfigFile("/nfs/homes/bkotwica/WebSer_new/configurations/config.conf")) {
         std::cerr << "Failed to load configuration file" << std::endl;
         return NULL;
     }

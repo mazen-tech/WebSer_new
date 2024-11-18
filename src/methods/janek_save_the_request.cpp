@@ -11,7 +11,7 @@ std::string Server::save_request(int new_socket)
     std::string request;
     ssize_t bytes = 0;
     // int round = 0;
-    std::cout << this->config->getCwd() << "\n";
+    // std::cout << this->config->getCwd() << "\n";
     std::string path =  this->config->getCwd() + "/configurations/config.conf";
     ssize_t max_by = parseClientMaxBodySize(path);
     int cl = 0;

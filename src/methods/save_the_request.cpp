@@ -9,7 +9,7 @@ std::string Server::save_request(int new_socket)
     std::string request;
     ssize_t bytes = 0;
     int round = 0;
-    ssize_t max_by = parseClientMaxBodySize("/mnt/c/Users/miche/OneDrive/Desktop/WebSer_new/configurations/config.conf");
+    ssize_t max_by = parseClientMaxBodySize("/nfs/homes/bkotwica/WebSer_new/configurations/config.conf");
     while (true)
     {
         bytes_read = read(new_socket, buffer, sizeof(buffer) - 1);
