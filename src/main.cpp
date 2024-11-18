@@ -14,16 +14,35 @@
 #include "../header/confParsing.hpp"
 
 
-int main() {
+int main(int argc, char **argv) {
+
+    if (argc < 2) 
+    {
+        std::cerr << RED << "Error: Configuration file not specified." << RESET << std::endl;
+        return 1;
+    }
+
 
     char buffer[PATH_MAX];
-    if (getcwd(buffer, PATH_MAX)) {
+    if (getcwd(buffer, PATH_MAX)) 
+    {
         std::cout << "Current working directory: " << buffer << std::endl;
-    } else {
+    } 
+    else {
         std::cerr << "Error getting current working directory" << std::endl;
         return 1;
     }
-    std::string path = std::string(buffer) + std::string("/configurations/config.conf");
+
+    std::string path = std::string(buffer) + "/configurations/" + argv[1];
+    std::ifstream configFile(path.c_str());
+    if (!configFile) 
+    {
+        std::cerr << RED << "Error: Configuration file \"" << path << "\" does not exist." << RESET << std::endl;
+        return 1;
+    }
+    configFile.close();
+
+
     Read_conf config(path.c_str());
     config.setCwd(buffer);
     checkMultiplePortsDefined(path);
@@ -31,19 +50,23 @@ int main() {
     {
         std::cout << "Loaded configuration successfully!" << std::endl;
         std::cout << "Listening Port in main: " << config.getPort() << std::endl;
-        std::cout << "Document Root: " << config.getDocumentRoot() << std::endl;
-
-    } else {
+    } 
+    else 
+    {
         std::cerr << "Failed to load configuration." << std::endl;
         return -1;
     }
+
+
     if (config.getPort() == 8080) 
     {
         Server server(config.getPort());
         server.config = &config;
         config.config.save_redirections(server.red);
         server.start();
-    } else {
+    } 
+    else 
+    {
         std::cerr << "Configuration not loaded properly(port is not allowed). Exiting...\n";
         return -1;
     }
