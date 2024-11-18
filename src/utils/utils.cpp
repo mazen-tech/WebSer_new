@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   utils.cpp                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: bkotwica <bkotwica@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/11/18 12:00:13 by bkotwica          #+#    #+#             */
+/*   Updated: 2024/11/18 12:00:18 by bkotwica         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../../header/utils.hpp"
 
 int ft_stoi(std::string str)
@@ -23,19 +35,3 @@ int stoiii(const std::string& str)
     return value;
 }
 
-//in progress
-/*
-std::string errorCodeStatus(short SC)
-{
-    (void)SC;
-    return ("undifined");
-    switch (SCHED_IDLE)
-    {
-    case 404:
-        std::cout << "unathenticated user" << std::endl;
-        break;
-    
-    default:
-        break;
-    }
-}*/

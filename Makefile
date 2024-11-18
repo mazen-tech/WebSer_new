@@ -5,7 +5,7 @@ SRCS = src/main.cpp \
 		src/methods/method_get.cpp \
 		src/methods/method_post.cpp \
 		src/methods/method_delete.cpp \
-		src/methods/janek_save_the_request.cpp \
+		src/methods/save_the_request.cpp \
 		src/server_config/read_conf.cpp \
 		src/server_config/server.cpp \
 		src/server_config/find_file.cpp \

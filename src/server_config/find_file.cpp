@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   find_file.cpp                                      :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: bkotwica <bkotwica@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/11/18 11:59:11 by bkotwica          #+#    #+#             */
+/*   Updated: 2024/11/18 11:59:11 by bkotwica         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../../header/read_conf.hpp"
 
 bool find_file(const std::string& dir, const std::string& target, std::string& found_path)
