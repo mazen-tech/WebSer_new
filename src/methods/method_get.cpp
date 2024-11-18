@@ -123,7 +123,7 @@ int Server::met_get(char *buffer, int new_socket)
         {
             // Obsługa błędu 404
             stat_code = "404";
-            std::string error_response = "HTTP/1.1 400 Bad request\r\n"
+            std::string error_response = "HTTP/1.1 404 Not found\r\n"
                                         "Content-Type: text/html\r\n"
                                         "Content-Length: " + to_string((_errorPage.getErrPage(404)).length()) +  "\r\n"
                                         "\r\n\r\n" +
@@ -165,7 +165,7 @@ int Server::met_get(char *buffer, int new_socket)
         {
             // Obsługa błędu 404
             stat_code = "404";
-            std::string error_response = "HTTP/1.1 400 Bad request\r\n"
+            std::string error_response = "HTTP/1.1 404 Not foundt\r\n"
                                         "Content-Type: text/html\r\n"
                                         "Content-Length: " + to_string((_errorPage.getErrPage(404)).length()) +  "\r\n"
                                         "\r\n\r\n" +
@@ -178,12 +178,17 @@ int Server::met_get(char *buffer, int new_socket)
     {
         // Obsługa błędu 404
         stat_code = "404";
-        std::string error_response = "HTTP/1.1 400 Bad request\r\n"
-                                    "Content-Type: text/html\r\n"
-                                    "Content-Length: " + to_string((_errorPage.getErrPage(404)).length()) +  "\r\n"
-                                    "\r\n\r\n" +
-                                    _errorPage.getErrPage(404);
-        send(new_socket, error_response.c_str(), error_response.size(), 0);
+        std::ifstream file("src/cgi/html/404.html");
+        std::stringstream file_stream;
+        std::cout << file.is_open() << std::endl;
+        file_stream << file.rdbuf();
+        std::string file_content = file_stream.str();
+        std::string content_type = "Content-Type: text/html\r\n";
+        std::string http_response = "HTTP/1.1 " + stat_code + " Not found\r\n" +
+                                    content_type +
+                                    "Content-Length: " + to_string(file_content.size()) + "\r\n\r\n"
+                                        + file_content;
+        send(new_socket, http_response.c_str(), http_response.size(), 0);
     }
     return (0);
 }
